@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.pnpm-store/
+package-lock.json
+
+# Next.js
+.next/
+out/
+
+# Build
+dist/
+build/
+coverage/
+playwright-report/
+test-results/
+.turbo/
+
+# Env
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+next-env.d.ts
+*.tsbuildinfo
+
+# Misc
+.cache/
+tmp/
+temp/

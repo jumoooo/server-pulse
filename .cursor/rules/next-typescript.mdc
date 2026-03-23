@@ -1,0 +1,73 @@
+---
+alwaysApply: false
+description: "Next/TS strict typing — no any, prefer const objects over enum, Zod inference. Use when editing TypeScript or TSX in this repo."
+globs: "**/*.ts,**/*.tsx"
+---
+
+## Internal Instructions (English)
+
+- Enforce strict TypeScript: no `any`, avoid careless `as`, no `@ts-ignore` (prefer `@ts-expect-error` with reason).
+- Prefer `const` object + `typeof` over `enum`; use `interface` for object shapes, `type` for unions/utilities.
+- Use Zod `z.infer` for input types; add runtime type guards where `unknown` crosses boundaries.
+
+## 사용자용 설명 (한글)
+
+# TypeScript 규칙
+
+## 필수 금지
+- `any` 타입 사용 금지 → `unknown` 또는 구체적 타입 사용
+- 타입 단언 `as Type` 남용 금지 (타입 가드 사용)
+- `@ts-ignore` 금지 (`@ts-expect-error` + 설명 허용)
+- `enum` 금지 → `const` 객체 + `typeof` 사용
+
+## 타입 정의 패턴
+
+```ts
+// ✅ const object (enum 대신)
+const Role = { ADMIN: 'admin', USER: 'user', GUEST: 'guest' } as const
+type Role = (typeof Role)[keyof typeof Role]
+
+// ✅ interface (확장 가능한 객체)
+interface User {
+  id: string
+  email: string
+  role: Role
+  createdAt: Date
+}
+
+// ✅ type (유니온, 유틸리티)
+type CreateUserInput = Omit<User, 'id' | 'createdAt'>
+type UpdateUserInput = Partial<CreateUserInput>
+type ApiResponse<T> = { success: true; data: T } | { success: false; error: string; code?: string }
+
+// ✅ Zod 스키마에서 타입 추론
+import { z } from 'zod'
+const UserSchema = z.object({ email: z.string().email(), name: z.string().min(1) })
+type UserInput = z.infer<typeof UserSchema>
+```
+
+## 타입 가드
+
+```ts
+// 런타임 타입 검증
+function isUser(value: unknown): value is User {
+  return typeof value === 'object' && value !== null && 'id' in value && 'email' in value
+}
+
+// API 응답 타입 가드
+function isApiSuccess<T>(res: ApiResponse<T>): res is { success: true; data: T } {
+  return res.success === true
+}
+```
+
+## tsconfig 기준 (strict mode 필수)
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true
+  }
+}
+```

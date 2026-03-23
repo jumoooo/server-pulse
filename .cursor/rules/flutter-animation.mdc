@@ -1,0 +1,138 @@
+---
+alwaysApply: false
+description: "Flutter 애니메이션 flicker 방지 및 프레임 순서 체크리스트"
+globs: "**/*animation*.dart,**/*Animation*.dart,**/calendar*.dart,**/*calendar*.dart"
+---
+
+## Internal Instructions (English)
+
+- Purpose: Prevent animation flicker and enforce proper frame ordering in Flutter animations.
+- Scope: Applies to files matching glob patterns: animation-related files, calendar widgets, and files with animation controllers.
+- Behavior:
+  - When orchestrator detects changes to files matching the glob patterns, automatically load this rule.
+  - Planner and featureImplementation MUST follow the checklists in this rule.
+  - Focus on preventing visual flicker during animations, especially during state transitions.
+
+## 사용자용 설명 (한글)
+
+# Flutter 애니메이션 Flicker 방지 규칙
+
+이 규칙은 Flutter 애니메이션에서 발생하는 flicker 문제를 방지하고, 올바른 프레임 순서를 보장하기 위한 체크리스트입니다.
+
+## 적용 범위
+
+- 애니메이션 관련 파일 (`**/*animation*.dart`, `**/*Animation*.dart`)
+- 캘린더 위젯 (`**/calendar*.dart`, `**/*calendar*.dart`)
+- `AnimationController`를 사용하는 모든 위젯
+
+## Orchestrator 지침
+
+- 변경 파일 목록에 위 glob 패턴과 일치하는 파일이 하나라도 포함되면:
+  - [ ] `flutter-animation` 규칙을 자동으로 로드하고, 아래 Planner/featureImplementation 체크리스트를 반드시 실행한다.
+  - [ ] 최소 워크플로우: `orchestrator → planner → featureImplementation → validation`
+
+---
+
+## Planner 체크리스트
+
+- [ ] 문제 정의를 "현상 시나리오"로 서술한다.
+  - 예: 월 전환 시, 슬라이드 후 다음 달이 보였다가 **잠깐 다른 달 그리드가 보인 뒤** 다시 정상적으로 표시됨.
+- [ ] root cause 가설을 2개 이상 제시한다.
+  - 예: 프레임 순서 문제 (로컬 상태 업데이트 vs Provider notify), 애니메이션 완료 시점 처리 오류
+- [ ] 2026년 기준 Flutter 모범 사례와 비교한다.
+  - `PageView` 기반 전환 패턴
+  - `AnimationController` 완료 시점 처리
+  - 프레임 순서 보장 패턴
+- [ ] 애니메이션 완료 시점 처리 전략을 정리한다.
+  - 로컬 상태 리셋 → Provider 상태 업데이트 순서
+  - 애니메이션 완료 후 1프레임 대기 후 상태 변경
+- [ ] 영향 파일/위험도를 간단히 명시한다.
+
+---
+
+## featureImplementation 체크리스트
+
+### 애니메이션 완료 시점 처리
+
+- [ ] 애니메이션 완료 시점에 **프레임 순서**를 점검한다.
+  - 로컬 상태(예: `_monthDragOffset`, `_monthAnimationEndOffset`)를 먼저 리셋
+  - 그 다음 Provider 상태(`currentMonth`, `selectedDate`) 업데이트
+  - 순서: `AnimationStatus.completed` → 로컬 상태 리셋 → Provider notify
+- [ ] 애니메이션 완료 후 1프레임 대기 후 상태 변경하는지 확인한다.
+  - `await Future.delayed(Duration.zero)` 또는 `await SchedulerBinding.instance.endOfFrame`
+- [ ] flicker 가능성이 있는 "1프레임 잘못된 조합"이 없는지 코드 레벨에서 검토한다.
+  - 예: Provider 상태가 변경되었는데 UI가 아직 이전 상태를 렌더링하는 경우
+
+### AnimationController 관리
+
+- [ ] `AnimationController` 리셋 시점을 확인한다.
+  - 애니메이션 완료 후 즉시 리셋하지 않고, 상태 업데이트 후 리셋
+- [ ] `AnimationController.addStatusListener`에서 상태 변경 순서를 확인한다.
+  - `AnimationStatus.completed` → 로컬 상태 리셋 → Provider 업데이트 → Controller 리셋
+
+### 코드 스타일
+
+- [ ] 새로 추가된 애니메이션 관련 상태/메서드에는 한글 주석으로 **의도**를 남긴다.
+- [ ] 기존 애니메이션 구조를 변경하지 않는지 확인한다.
+- [ ] 변경 범위는 가능한 한 해당 위젯 내부에 국한한다.
+
+### 작업 후
+
+- [ ] `read_lints` 또는 `dart analyze`로 수정 파일을 점검한다.
+- [ ] 필요한 경우 관련 테스트(`flutter test`)를 실행한다.
+
+---
+
+## Validation 체크리스트
+
+- [ ] 최소한 수정 파일에 대해 정적 분석/린트를 실행한다.
+- [ ] UX 수동 확인 시나리오를 정의한다.
+  - 애니메이션 전환 시 flicker 발생 여부
+  - 애니메이션 완료 후 상태 일관성
+  - 여러 번 전환 시에도 문제 없는지 확인
+
+---
+
+## 모범 사례
+
+### 프레임 순서 보장 패턴
+
+```dart
+_monthCurvedAnimation.addStatusListener((status) async {
+  if (status == AnimationStatus.completed) {
+    final double finalOffset = _monthAnimationEndOffset;
+
+    // 1) 애니메이션/드래그 상태를 먼저 리셋
+    _monthAnimationController.reset();
+    setState(() {
+      _monthDragOffset = 0;
+      _monthAnimationEndOffset = 0;
+    });
+
+    // 2) 1프레임 대기 (선택사항, 필요시)
+    await Future.delayed(Duration.zero);
+
+    // 3) 그 다음에 Provider의 상태를 변경
+    final calendarProvider = Provider.of<CalendarProvider>(
+      context,
+      listen: false,
+    );
+
+    if (finalOffset < -epsilon) {
+      await calendarProvider.nextMonth();
+    } else if (finalOffset > epsilon) {
+      await calendarProvider.previousMonth();
+    }
+  }
+});
+```
+
+### PageView 기반 전환 패턴
+
+- `PageView`를 사용하여 자연스러운 전환 구현
+- `PageController`와 `AnimationController`를 함께 사용할 때 상태 동기화 주의
+
+---
+
+Agent 파일 참조: [orchestrator.md](mdc:.cursor/agents/orchestrator.md)
+Skills 파일 참조: [ui-component-builder/SKILL.md](mdc:.cursor/skills/ui-component-builder/SKILL.md)

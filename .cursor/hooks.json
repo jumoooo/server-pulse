@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/session-start-context.js"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "dart .cursor/hooks/format_dart.dart"
+      },
+      {
+        "command": "node .cursor/hooks/prettier-after-edit.js"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "node .cursor/hooks/shell-guard.js"
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "matcher": "Shell",
+        "command": "node .cursor/hooks/shell-failure-hint.js"
+      }
+    ],
+    "stop": [
+      {
+        "command": "node .cursor/hooks/stop-reminder.js"
+      }
+    ]
+  }
+}

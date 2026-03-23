@@ -1,0 +1,52 @@
+---
+alwaysApply: false
+description: "When to use context7, sequential-thinking, GitHub, Playwright MCP in this repo. Use when editing TS/TSX/MD and MCP or agent tooling is relevant."
+globs: "**/*.ts,**/*.tsx,**/*.md"
+---
+
+## Internal Instructions (English)
+
+- **context7**: Official library docs for Next.js, React, Tailwind, Zod before non-trivial implementation or review.
+- **sequential-thinking**: Multi-step reasoning for orchestrator/planner when trade-offs are unclear.
+- **github**: PR/issue flows for `commit` agent; requires `GITHUB_TOKEN`.
+- **playwright** MCP: Snapshot/selectors for E2E authoring (`test` agent).
+- Cursor may expose MCP tool names with different prefixes; adapt to the active MCP descriptor names in the workspace.
+
+## 사용자용 설명 (한글)
+
+# MCP 사용 가이드
+
+## 설치된 MCP 서버 (예시)
+
+| 서버                  | 역할                             | 주요 사용 에이전트                     |
+| --------------------- | -------------------------------- | -------------------------------------- |
+| `context7`            | 라이브러리 최신 공식 문서 조회   | planner, feature, ui, api, agentCritic |
+| `sequential-thinking` | 복잡한 멀티스텝 추론             | orchestrator, planner                  |
+| `github`              | GitHub 리포지토리, PR, 이슈 관리 | commit                                 |
+| `playwright`          | 브라우저 자동화, E2E 테스트 지원 | test                                   |
+
+(실제 도구 이름은 Cursor MCP 설정에 따라 `mcp__*` 접두사 형태일 수 있습니다.)
+
+---
+
+## context7
+
+- 라이브러리 ID 검색 후 문서 토픽 조회.
+- Next.js 15, React 19, Zod 등 구현·리뷰 전 최신 패턴 확인에 사용.
+
+## sequential-thinking
+
+- 모호한 요청, 아키텍처 트레이드오프, 멀티 에이전트 설계 시 사용.
+
+## github
+
+- PR 생성, 커밋 조회 등. `GITHUB_TOKEN` 필요.
+
+## playwright
+
+- E2E 작성 전 스냅샷으로 role/name 확인.
+
+## 주의사항
+
+- MCP는 환경·재시작 후 활성화 여부가 달라질 수 있음.
+- context7은 네트워크 의존; 불가 시 WebFetch 등으로 대체 검토.

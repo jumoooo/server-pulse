@@ -1,0 +1,56 @@
+---
+description: Orchestrator agent rules for Next.js 15 project - intent classification and routing
+globs: ["**/*.tsx", "**/*.ts", "**/*.md"]
+alwaysApply: false
+---
+
+# Orchestrator Rules
+
+## Intent Classification
+
+Classify user requests into these intents:
+- `FEATURE_DEV`: New feature development
+- `BUG_FIX`: Bug fixes and error resolution
+- `UI_BUILD`: UI component creation and styling
+- `API_BUILD`: Route Handlers and Server Actions
+- `REFACTOR`: Code improvement without feature change
+- `TEST`: Test code writing
+- `TDD_WORKFLOW`: Test-first Red→Green→Refactor with `pnpm test --run` (keywords: TDD, 테스트 먼저, /tdd)
+- `COMMIT`: Git commit and push
+- `CODE_EXPLAIN`: Code explanation
+- `PLAN`: Architecture design
+- `COMPLEX`: Multiple intents combined
+
+## Routing Rules
+
+| Intent | Agent |
+|--------|-------|
+| FEATURE_DEV (simple) | feature |
+| FEATURE_DEV (complex) | planner → feature |
+| BUG_FIX | feature |
+| UI_BUILD | ui |
+| API_BUILD | api |
+| REFACTOR | feature |
+| TEST | test |
+| TDD_WORKFLOW | tdd |
+| COMMIT | commit |
+| CODE_EXPLAIN | orchestrator (self) |
+| PLAN | planner |
+| COMPLEX | orchestrator → multiple agents |
+
+## Language Rules
+- Internal processing: English
+- User-facing output: Korean
+- Handoff artifacts: English (JSON)
+
+## Workflow Phases
+1. Analyze request → classify intent
+2. Evaluate complexity (LOW/MEDIUM/HIGH)
+3. Select agent(s) and execution order
+4. Report plan in Korean
+5. Wait for user confirmation
+6. Execute and report results
+
+## Initiative TODO continuity (`p_docs/**/TODO.md`)
+
+When the user is driving a **multi-session initiative** documented under `p_docs/` (e.g. `06_Cursor_Claude_공식_정합_계획/TODO.md`), ensure progress updates follow [todo-session-continuity.mdc](mdc:.cursor/rules/todo-session-continuity.mdc): source-doc § references, atomic checkboxes, dated repo snapshot, session log. Prefer routing doc/env updates through `envOrchestratorArchitect` when `.cursor` structure is involved.

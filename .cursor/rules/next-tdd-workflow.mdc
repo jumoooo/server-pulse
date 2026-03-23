@@ -1,0 +1,114 @@
+---
+alwaysApply: false
+description: "TDD workflow when to apply Red-Green-Refactor, layer test strategy, MSW vs vi.mock. Use when user requests test-first work or TDD policy (complements tdd agent)."
+globs: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,src/app/actions/**,src/app/api/**"
+---
+
+## Internal Instructions (English)
+
+- Apply full TDD for new features, bug fixes, Server Actions, Route Handlers, and business logic—not for pure style or config-only edits.
+- Prefer Vitest co-located tests; Playwright E2E for critical flows only; use MSW for fetch from client components, `vi.mock` for direct action/handler tests.
+- For end-to-end automation of the cycle, delegate to the **`tdd` subagent**; this rule documents policy and structure.
+
+## 사용자용 설명 (한글)
+
+# TDD 워크플로우 규칙
+
+## TDD 적용 기준
+
+| 적용 (필수)        | 미적용              |
+| ------------------ | ------------------- |
+| 새 기능 개발       | 순수 UI 스타일 변경 |
+| 버그 수정          | 타입 정의만 변경    |
+| Server Action 구현 | 설정 파일 수정      |
+| Route Handler 구현 | 패키지 업데이트     |
+| 비즈니스 로직 추가 | 문서 수정           |
+
+---
+
+## 레이어별 테스트 전략
+
+### Unit (단위 테스트)
+
+- **대상**: `src/lib/`, `src/hooks/`, 순수 함수, Zod 스키마
+- **도구**: Vitest
+- **위치**: 대상 파일과 같은 디렉토리 (`*.test.ts`)
+- **커버리지 목표**: 90%+
+
+### Integration (통합 테스트)
+
+- **대상**: Server Actions, Route Handlers, 컴포넌트+Action 조합
+- **도구**: Vitest + MSW v2 (fetch 기반 API 모킹)
+- **위치**: 대상 파일과 같은 디렉토리 (`*.test.ts(x)`)
+- **커버리지 목표**: 80%+
+
+### E2E (End-to-End 테스트)
+
+- **대상**: 핵심 사용자 시나리오 (CRUD 흐름, 인증 흐름)
+- **도구**: Playwright
+- **위치**: `e2e/` 디렉토리 (`*.spec.ts`)
+- **범위**: Happy path + 주요 에러 시나리오만 (모든 케이스 E2E로 작성 금지)
+
+---
+
+## TDD 3단계 실행 플로우
+
+### Step 1: Red — 실패하는 테스트 먼저
+
+1. 구현할 함수/컴포넌트의 시그니처 결정
+2. 타입 파일 먼저 생성 (`src/types/`) — 구현은 아직
+3. 테스트 파일 작성 (구현 파일 없음)
+4. `pnpm test [파일]` → 런타임 실패 확인
+
+### Step 2: Green — 테스트를 통과하는 최소 구현
+
+1. 테스트가 통과하는 최소한의 코드만 작성
+2. 코드 품질 고려 금지 — Refactor 단계에서 처리
+3. `pnpm test [파일]` → 전체 통과 확인
+
+### Step 3: Refactor — 구현 정리
+
+1. Green 상태 유지하며 내부 구조 개선
+2. 중복 제거, 명명 개선, 불필요한 코드 제거
+3. 테스트는 수정하지 않음
+4. `pnpm test` → 여전히 통과 확인
+
+---
+
+## 테스트 파일 구조 규칙
+
+```ts
+describe('[대상명]', () => {
+  beforeEach(() => vi.clearAllMocks())
+  describe('성공 케이스', () => { /* ... */ })
+  describe('에러 케이스', () => { /* ... */ })
+  describe('경계값', () => { /* ... */ })
+})
+```
+
+---
+
+## 모킹 전략 선택 기준
+
+| 상황                                       | 도구        |
+| ------------------------------------------ | ----------- |
+| 클라이언트 컴포넌트가 `fetch()`로 API 호출 | MSW v2      |
+| Server Action 직접 함수 호출 테스트        | `vi.mock()` |
+| Route Handler 직접 함수 호출 테스트        | `vi.mock()` |
+| 순수 유틸 함수                             | 모킹 불필요 |
+| `next/cache`, `next/navigation`            | `vi.mock()` |
+
+---
+
+## MSW v2 프로젝트 초기 세팅 체크리스트
+
+- [ ] `pnpm add -D msw`
+- [ ] `src/__tests__/msw/handlers.ts` 생성 (빈 handlers 배열)
+- [ ] `src/__tests__/msw/server.ts` 생성
+- [ ] `src/__tests__/setup.ts`에 MSW 서버 연동 추가
+- [ ] `vitest.config.ts`의 `setupFiles` 확인
+
+도메인별 핸들러 추가 시:
+
+- [ ] `src/__tests__/msw/handlers/[도메인].ts` 생성
+- [ ] `src/__tests__/msw/handlers.ts`에 import 후 조합

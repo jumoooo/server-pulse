@@ -1,0 +1,32 @@
+---
+description: "Session TODO.md must trace to source docs with atomic, unambiguous tasks—use when editing p_docs/**/TODO.md or creating multi-session work trackers"
+globs: "p_docs/**/TODO.md"
+alwaysApply: false
+---
+
+## Internal Instructions (English)
+
+- **Purpose**: Remove ambiguity when work spans multiple chat sessions. Any project `TODO.md` used as a **continuity anchor** must be executable without re-deriving intent from memory.
+- **Scope**: Files matching `p_docs/**/TODO.md` (and the same pattern for similar initiative folders). Other `TODO.md` files SHOULD follow the same pattern when they serve session continuity.
+- **Mandatory behaviors**:
+  1. **Source traceability**: Every phase or major block MUST cite the governing doc(s) with path + heading/section (e.g. `[02_Phase별_상세_작업서.md § Phase 1]`). Vague “see docs” is not allowed.
+  2. **Mirror plan structure**: Copy **Input / 작업(Work) / 산출물(Artifacts) / DoD** from the source plan (e.g. `02_Phase별_상세_작업서.md`) into the TODO for that phase, then break DoD into **atomic checkboxes** (one verifiable action per line).
+  3. **Atomic tasks**: Each checkbox MUST be objectively verifiable (e.g. “add file X”, “glob Y matches `src/app/api/**`”). Avoid “review and improve” without naming files or criteria.
+  4. **No orphan work**: If the source mapping table (`01_에이전트_스킬_룰_매핑표.md`) lists an item with an action, either complete it or mark **의도적 유지 (intentional)** with a one-line reason and link.
+  5. **Repo snapshot**: Keep a **dated** subsection (paths + 존재 여부) that reflects the repository; update it whenever related files change.
+  6. **Session log**: After substantive work, append a row: date, what was done (files/paths), exact next step (first unchecked atomic id).
+- **Agents**: `envOrchestratorArchitect` (and any agent editing continuity TODOs) MUST apply this rule. When splitting work, prefer updating the initiative `TODO.md` before closing the session.
+
+## 사용자용 설명 (한글)
+
+### 세션 연속용 TODO 작성 규칙 📌
+
+- **목적**: 새 채팅에서도 **논쟁 없이** 같은 작업을 이어가려면, `p_docs/**/TODO.md` 같은 연속성 파일을 “추측 없이” 읽을 수 있게 써야 합니다.
+- **필수**:
+  1. **근거 문서 표기**: 각 Phase/블록마다 **어느 문서의 어느 절**인지 경로·섹션으로 밝힙니다. (예: `02_Phase별_상세_작업서.md` Phase 1 표)
+  2. **계획서와 동형**: 원문의 **입력 / 작업 / 산출물 / DoD**를 TODO에 반영한 뒤, DoD를 **한 줄에 하나씩 검증 가능한 체크박스**로 쪼갭니다.
+  3. **모호 금지**: “검토한다”만 쓰지 말고, **파일 경로·완료 조건**을 적습니다.
+  4. **매핑표 정합**: `01_에이전트_스킬_룰_매핑표.md`의 조치가 남아 있으면 처리하거나 **의도적 유지**와 이유를 남깁니다.
+  5. **날짜 있는 스냅샷**: 리포지토리 상태(주요 경로 존재 여부)를 적고, 관련 파일이 바뀌면 갱신합니다.
+  6. **세션 로그**: 작업 후 표에 **날짜 / 한 일 / 다음에 할 일(첫 미체크 항목 id)** 를 남깁니다.
+- **적용 에이전트**: 환경/계획 문서를 다루는 작업(특히 `envOrchestratorArchitect`)은 이 규칙을 **반드시** 따릅니다.
