@@ -11,7 +11,10 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "gate:lane": "node scripts/validate-lane-env.js",
+    "gate:lane:demo": "node scripts/validate-lane-env.js demo",
+    "gate:lane:prod": "node scripts/validate-lane-env.js prod"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",

@@ -3,6 +3,12 @@
 AI 기반 게임 서버 관제 플랫폼입니다.  
 실시간 서버 상태 모니터링, 알림 관리, Claude 기반 이상 징후 분석을 제공합니다.
 
+## 🌐 데모
+
+- 대시보드 데모: [https://server-pulse-test.vercel.app/dashboard](https://server-pulse-test.vercel.app/dashboard)
+- 이 링크는 이력서/포트폴리오용으로 `main` 브랜치의 README에서 항상 확인할 수 있습니다.
+- 소스 개발은 데모용/개발용 브랜치로 분리 운영할 수 있으며, 공개 데모 진입점은 본 README를 기준으로 유지합니다.
+
 ## ✨ 주요 기능
 
 - **대시보드** ` /dashboard `
