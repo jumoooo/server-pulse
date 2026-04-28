@@ -7,19 +7,20 @@
 - Closes #
 - Refs jumoooo/server-pulse-root-ops#
 
-## 🗂️ 변경 범위
+## 📍 변경 범위
 
 - [ ] 페이지 / 레이아웃
 - [ ] 컴포넌트 / 훅 / 상태 관리
 - [ ] Route Handler / BFF
 - [ ] 테스트
+- [ ] 문서
 - [ ] 기타
 
 ## 🧪 검증
 
-- [ ] `pnpm type-check`
+- [ ] `pnpm typecheck`
 - [ ] `pnpm test`
-- [ ] `pnpm build`
+- [ ] 필요 시 `pnpm build`
 - [ ] 필요한 경우 스크린샷 또는 실행 결과 첨부
 
 ## 🔄 교차 저장소 영향
