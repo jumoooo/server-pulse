@@ -3,6 +3,13 @@
 AI 기반 게임 서버 관제 플랫폼입니다.  
 실시간 서버 상태 모니터링, 알림 관리, Claude 기반 이상 징후 분석을 제공합니다.
 
+## 🤝 협업 규칙
+
+- frontend 기능/버그 이슈, 브랜치, 커밋, PR는 **이 저장소에서** 진행해요.
+- root 운영 문서, handoff, gate, harness, `.cursor`, `.codex`, `.agents` 변경은 **[`jumoooo/server-pulse-root-ops`](https://github.com/jumoooo/server-pulse-root-ops)** 에서 진행해요.
+- backend API 계약이나 env가 함께 바뀌면 **root parent issue + package child issue** 구조로 나눠서 처리해요.
+- 같은 저장소 이슈를 닫을 때는 `Closes #번호`를 쓰고, root 상위 이슈는 `Refs jumoooo/server-pulse-root-ops#번호`로 연결해요.
+
 ## 🌐 데모
 
 - 대시보드 데모: [https://server-pulse-test.vercel.app/dashboard](https://server-pulse-test.vercel.app/dashboard)
