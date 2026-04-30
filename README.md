@@ -74,6 +74,16 @@ frontend는 자체 Prisma 데이터를 중심으로 돌아가요.
 즉, backend가 꺼져 있어도 프론트의 핵심 CRUD/인증/알림 기능은 대부분 동작하고,  
 실시간 헬스 패널만 비활성화될 수 있어요.
 
+### frontend 기능 분류
+
+| 기능 영역 | 분류 | 설명 |
+|---|---|---|
+| 서버 CRUD, 알림 관리, AI 분석, 인증/인가 | 독립 동작 (Prisma) | backend 없이도 동작 |
+| 게임 서버 overview (대시보드) | backend 연동 | `useServerOverview` → `/api/servers/overview` |
+| 게임 서버 health (서버 상세) | backend 연동 | `useServerHealth` → `/api/servers/:id/health` |
+| 게임 서버 trend (서버 상세) | backend 연동 | `useServerTrend` → `/api/servers/:id/trend` |
+| Steam API, diagnose, compare, players, rules | 미노출 (보류) | backend 구현됨, frontend UI 미연결 |
+
 ## 환경 변수
 
 `frontend/.env.local.example`를 기준으로 맞춰요.
@@ -141,4 +151,4 @@ frontend는 자체 Prisma 데이터를 중심으로 돌아가요.
 
 - [frontend/AGENTS.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\frontend\AGENTS.md)
 - [root docs/REPOSITORY_WORKFLOW.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\docs\REPOSITORY_WORKFLOW.md)
-- [root docs/2026-04-29_현재-프로젝트-파악.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\docs\2026-04-29_현재-프로젝트-파악.md)
+- [root docs/2026-04-29_프로젝트-현황-점검/현재-프로젝트-파악.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\docs\2026-04-29_프로젝트-현황-점검\현재-프로젝트-파악.md)
