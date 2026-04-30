@@ -25,8 +25,9 @@
 ## 운영 원칙
 
 - 프론트 패키지 구현은 이 파일과 루트 [AGENTS.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\AGENTS.md)를 함께 따릅니다.
-- 상세 라우팅·역할·디자인 토큰·Gemini 안전 실행 정본은 [frontend/.cursor/AGENTS.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\frontend\.cursor\AGENTS.md)에 있습니다.
-- `.cursor` 자산은 기존 SoT로 유지하고, `.codex`/`.agents`는 Codex 병행 레이어로만 추가합니다.
+- Codex 세션은 이 파일과 루트 [AGENTS.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\AGENTS.md)를 package 기본 계약으로 읽어요.
+- `frontend/.cursor/AGENTS.md`는 Cursor용 상세 운영 참고 자산으로 보존합니다.
+- `.cursor` 자산은 기존 SoT로 유지하되, Codex가 기본 런타임 규칙을 읽는 위치로 쓰지는 않아요.
 - 사용자 승인 없이 프론트/루트/백엔드의 미러 자산을 삭제·비우기·단순화하지 않습니다.
 
 ## 이 저장소에서 처리하는 작업
@@ -46,6 +47,13 @@
 - backend 응답 계약이 바뀌는지 확인해요.
 - 교차 작업이면 `port / CORS / env` 정합 메모를 PR에 남겨요.
 - 구현 PR에는 테스트나 빌드 결과를 함께 남겨요.
+- UI / 화면 / 가시성 / 레이아웃 작업이면 구현 전에 디자인 스킬부터 확인해요.
+  - 우선 `/find-skills`로 프론트 디자인 스킬을 찾고, 가능하면 아래를 우선 사용해요.
+  - `frontend-design`
+    - 시각 방향, 카드 정합성, 대비, 레이아웃 개선 설계용
+  - `web-design-guidelines`
+    - 버튼/필터 과대 확장, 정렬, 접근성, 대비 점검용
+  - 스킬을 사용할 수 없으면 그 사실을 기록하고, 같은 기준을 수동으로 적용해요.
 
 ## 기본 점검
 
@@ -53,6 +61,11 @@
 - `pnpm test`
 - 필요 시 `pnpm build`
 - 교차 패키지 작업 시 루트 [INTEGRATION_GATE.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\.cursor\docs\core\INTEGRATION_GATE.md) 기준의 Port/CORS/Env 증빙
+- 디자인/레이아웃 수정 후에는 아래도 함께 점검해요.
+  - 텍스트와 배경 대비가 충분한지
+  - 카드/리스트 UI가 같은 제품 언어로 정합한지
+  - 필터/세그먼트 버튼이 내용보다 과도하게 늘어나지 않는지
+  - 액션 버튼/열 정렬이 화면 의도와 맞는지
 
 ## 빠른 판단
 
