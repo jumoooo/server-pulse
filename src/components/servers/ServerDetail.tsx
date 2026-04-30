@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { checkBackendAvailable } from "@/lib/backendApi";
 import { useServerHealth } from "@/features/game-status/hooks/useServerHealth";
 import { useServerTrend } from "@/features/game-status/hooks/useServerTrend";
+import { useServerDiagnose } from "@/features/game-status/hooks/useServerDiagnose";
+import { useServerPlayers } from "@/features/game-status/hooks/useServerPlayers";
 import type {
   ServerDetail as ServerDetailType,
   MetricPoint,
@@ -97,6 +99,12 @@ export function ServerDetail({ server }: ServerDetailProps) {
     enabled: backendAvailable,
   });
   const { data: trend } = useServerTrend(server.id, { enabled: backendAvailable });
+  const { data: diagnose } = useServerDiagnose(server.id, {
+    enabled: backendAvailable,
+  });
+  const { data: playersData } = useServerPlayers(server.id, {
+    enabled: backendAvailable,
+  });
 
   const serverAlerts = (allAlerts ?? []).filter(
     (a) => a.serverId === server.id
@@ -277,6 +285,67 @@ export function ServerDetail({ server }: ServerDetailProps) {
             color="#6366f1"
             unit="명"
           />
+        </div>
+      )}
+
+      {backendAvailable && diagnose && (
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-sm font-semibold text-fg-base">진단 정보</h2>
+              <Badge
+                variant={
+                  diagnose.status === "GOOD"
+                    ? "ok"
+                    : diagnose.status === "WARNING"
+                      ? "warn"
+                      : "error"
+                }
+              >
+                {diagnose.status}
+              </Badge>
+            </div>
+            {diagnose.analysis.length > 0 && (
+              <ul className="mt-3 space-y-1">
+                {diagnose.analysis.map((item, index) => (
+                  <li key={`${item}-${index}`} className="text-xs text-fg-muted">
+                    • {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {diagnose.reason && (
+              <p className="mt-2 text-xs text-fg-muted">{diagnose.reason}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {backendAvailable && playersData && playersData.playerList.length > 0 && (
+        <div>
+          <h2 className="mb-3 text-sm font-semibold text-fg-base">
+            현재 플레이어 ({playersData.playerList.length}명)
+          </h2>
+          <Card>
+            <CardContent className="p-0">
+              <ul className="divide-y divide-border-default">
+                {playersData.playerList.map((player, index) => (
+                  <li
+                    key={`${player.name}-${index}`}
+                    className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm"
+                  >
+                    <span className="text-fg-base">{player.name}</span>
+                    <div className="flex items-center gap-4 text-xs text-fg-subtle">
+                      {player.score !== undefined && <span>점수 {player.score}</span>}
+                      {player.time !== undefined && (
+                        <span>{Math.round(player.time / 60)}분</span>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
         </div>
       )}
 
