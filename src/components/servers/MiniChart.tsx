@@ -31,9 +31,9 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label, unit }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-gray-700 bg-gray-900 px-2.5 py-1.5 shadow-lg">
-      <p className="text-xs text-gray-400">{label}</p>
-      <p className="mt-0.5 text-xs font-semibold text-white">
+    <div className="rounded-lg border border-border-default bg-bg-surface px-2.5 py-1.5 shadow-lg">
+      <p className="text-xs text-fg-muted">{label}</p>
+      <p className="mt-0.5 text-xs font-semibold text-fg-base">
         {typeof payload[0]?.value === "number"
           ? payload[0].value.toFixed(1)
           : "-"}
@@ -50,14 +50,14 @@ export function MiniChart({
   label,
 }: MiniChartProps) {
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-      <p className="mb-3 text-xs font-medium text-gray-400">{label}</p>
+    <div className="rounded-xl border border-border-default bg-bg-surface p-4">
+      <p className="mb-3 text-xs font-medium text-fg-muted">{label}</p>
       <ResponsiveContainer width="100%" height={120}>
         <LineChart
           data={data}
           margin={{ top: 2, right: 4, bottom: 0, left: -20 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             dataKey="time"
             tick={{ fill: "#6b7280", fontSize: 10 }}
