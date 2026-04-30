@@ -15,6 +15,7 @@ import { useServerMetrics } from "@/features/servers/model/hooks/useServerMetric
 import { useAlerts } from "@/hooks/useAlerts";
 import { MiniChart } from "@/components/servers/MiniChart";
 import { AnalysisPanel } from "@/components/servers/AnalysisPanel";
+import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingState } from "@/components/common/LoadingState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -89,21 +90,24 @@ export function ServerDetail({ server }: ServerDetailProps) {
   const { data: allAlerts } = useAlerts();
 
   // 백엔드 가용 여부 확인 (오프라인이면 헬스 패널 숨김)
-  const [backendAvailable, setBackendAvailable] = useState(false);
+  const [backendAvailable, setBackendAvailable] = useState<boolean | null>(null);
 
   useEffect(() => {
     checkBackendAvailable().then(setBackendAvailable);
   }, []);
+  const isBackendAvailable = backendAvailable === true;
 
   const { data: gameHealth } = useServerHealth(server.id, {
-    enabled: backendAvailable,
+    enabled: isBackendAvailable,
   });
-  const { data: trend } = useServerTrend(server.id, { enabled: backendAvailable });
+  const { data: trend } = useServerTrend(server.id, {
+    enabled: isBackendAvailable,
+  });
   const { data: diagnose } = useServerDiagnose(server.id, {
-    enabled: backendAvailable,
+    enabled: isBackendAvailable,
   });
   const { data: playersData } = useServerPlayers(server.id, {
-    enabled: backendAvailable,
+    enabled: isBackendAvailable,
   });
 
   const serverAlerts = (allAlerts ?? []).filter(
@@ -135,6 +139,16 @@ export function ServerDetail({ server }: ServerDetailProps) {
         </Link>
       </div>
 
+      {backendAvailable === false && (
+        <Card>
+          <CardContent className="p-4">
+            <p className="text-sm text-fg-muted">
+              백엔드 서버에 연결할 수 없습니다. 실시간 게임 서버 정보를 표시하려면 백엔드가 실행 중이어야 합니다.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardContent className="p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -157,27 +171,38 @@ export function ServerDetail({ server }: ServerDetailProps) {
                 {REGION_LABEL[server.region] ?? server.region} · v{server.version}
               </p>
             </div>
-            <Button
-              variant="accent"
-              size="sm"
-              onClick={() => setShowAnalysis((v) => !v)}
-              className="h-8 w-full gap-1.5 px-3 text-xs sm:w-auto"
-            >
-              <svg
-                className="h-3.5 w-3.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled
+                title="기능 준비 중"
+                className="h-8 w-full px-3 text-xs sm:w-auto"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-              AI 분석
-            </Button>
+                편집
+              </Button>
+              <Button
+                variant="accent"
+                size="sm"
+                onClick={() => setShowAnalysis((v) => !v)}
+                className="h-8 w-full gap-1.5 px-3 text-xs sm:w-auto"
+              >
+                <svg
+                  className="h-3.5 w-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                AI 분석
+              </Button>
+            </div>
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
@@ -378,6 +403,8 @@ export function ServerDetail({ server }: ServerDetailProps) {
 
         {metricsLoading ? (
           <LoadingState message="메트릭 데이터를 불러오는 중..." />
+        ) : activeMetrics.length === 0 ? (
+          <EmptyState message="성능 지표 데이터가 없습니다." />
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <MiniChart
@@ -439,10 +466,10 @@ export function ServerDetail({ server }: ServerDetailProps) {
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                       alert.status === "open"
-                        ? "bg-bg-elevated text-fg-muted"
+                        ? "bg-status-warn-bg text-status-warn-fg"
                         : alert.status === "acknowledged"
                           ? "bg-interactive-accent/10 text-interactive-accent"
-                          : "bg-bg-base text-fg-subtle"
+                          : "bg-status-ok-bg text-status-ok-fg"
                     }`}
                   >
                     {ALERT_STATUS_LABEL[alert.status]}

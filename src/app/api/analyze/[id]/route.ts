@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { mockServers, mockAlerts, getMetrics } from "@/lib/mockData";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 const SYSTEM_PROMPT = `당신은 게임 서버 SRE(Site Reliability Engineer) 전문가입니다.
 운영자에게 서버 이상 징후의 원인과 조치 방법을 한국어로 간결하게 안내합니다.
@@ -37,8 +38,26 @@ export async function POST(
   _: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+  if (!session) {
+    return Response.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
   const { id } = await params;
-  const server = mockServers.find((s) => s.id === id);
+  let server: Awaited<ReturnType<typeof prisma.server.findUnique>>;
+  try {
+    server = await prisma.server.findUnique({
+      where: { id },
+    });
+  } catch {
+    return Response.json(
+      { success: false, error: "DB 오류: 서버 조회 실패" },
+      { status: 500 }
+    );
+  }
 
   if (!server) {
     return Response.json(
@@ -47,17 +66,44 @@ export async function POST(
     );
   }
 
-  const recentMetrics = getMetrics(id, "1h").slice(-3);
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  let recentMetrics: Awaited<ReturnType<typeof prisma.metricPoint.findMany>>;
+  let activeAlerts: Awaited<ReturnType<typeof prisma.alert.findMany>>;
+  try {
+    [recentMetrics, activeAlerts] = await Promise.all([
+      prisma.metricPoint.findMany({
+        where: {
+          serverId: id,
+          timestamp: {
+            gte: oneHourAgo,
+          },
+        },
+        orderBy: { timestamp: "desc" },
+        take: 3,
+      }),
+      prisma.alert.findMany({
+        where: {
+          serverId: id,
+          status: {
+            not: "resolved",
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
+  } catch {
+    return Response.json(
+      { success: false, error: "DB 오류: 메트릭 조회 실패" },
+      { status: 500 }
+    );
+  }
+
   const avg = (key: keyof (typeof recentMetrics)[0]) => {
     const sum = recentMetrics.reduce((acc, m) => acc + (m[key] as number), 0);
     return recentMetrics.length > 0
       ? (sum / recentMetrics.length).toFixed(1)
       : "0";
   };
-
-  const activeAlerts = mockAlerts.filter(
-    (a) => a.serverId === id && a.status !== "resolved"
-  );
 
   const statusLabel: Record<string, string> = {
     healthy: "정상",
@@ -101,16 +147,20 @@ ${alertLines}`;
 
     const readable = new ReadableStream({
       async start(controller) {
-        const enc = new TextEncoder();
-        for await (const chunk of stream) {
-          if (
-            chunk.type === "content_block_delta" &&
-            chunk.delta.type === "text_delta"
-          ) {
-            controller.enqueue(enc.encode(chunk.delta.text));
+        try {
+          const enc = new TextEncoder();
+          for await (const chunk of stream) {
+            if (
+              chunk.type === "content_block_delta" &&
+              chunk.delta.type === "text_delta"
+            ) {
+              controller.enqueue(enc.encode(chunk.delta.text));
+            }
           }
+          controller.close();
+        } catch (error) {
+          controller.error(error);
         }
-        controller.close();
       },
     });
 
