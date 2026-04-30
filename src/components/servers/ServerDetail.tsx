@@ -1,16 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { checkBackendAvailable } from "@/lib/backendApi";
+import { useServerHealth } from "@/features/game-status/hooks/useServerHealth";
+import { useServerTrend } from "@/features/game-status/hooks/useServerTrend";
 import type {
   ServerDetail as ServerDetailType,
   MetricPoint,
 } from "@/types/server";
-import { useServerMetrics } from "@/hooks/useServerMetrics";
+import { useServerMetrics } from "@/features/servers/model/hooks/useServerMetrics";
 import { useAlerts } from "@/hooks/useAlerts";
 import { MiniChart } from "@/components/servers/MiniChart";
 import { AnalysisPanel } from "@/components/servers/AnalysisPanel";
 import { LoadingState } from "@/components/common/LoadingState";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 type Range = "1h" | "6h" | "24h";
 
@@ -21,24 +27,9 @@ const RANGE_OPTIONS: { value: Range; label: string }[] = [
 ];
 
 const STATUS_LABEL = { healthy: "정상", degraded: "저하", down: "다운" };
-const STATUS_BADGE = {
-  healthy: "bg-emerald-400/10 text-emerald-400",
-  degraded: "bg-yellow-400/10 text-yellow-400",
-  down: "bg-red-400/10 text-red-400",
-};
 
-const SEVERITY_BADGE = {
-  critical: "bg-red-400/10 text-red-400",
-  warning: "bg-yellow-400/10 text-yellow-400",
-  info: "bg-blue-400/10 text-blue-400",
-};
 const SEVERITY_LABEL = { critical: "심각", warning: "경고", info: "정보" };
 
-const ALERT_STATUS_BADGE = {
-  open: "bg-gray-700 text-gray-300",
-  acknowledged: "bg-indigo-400/10 text-indigo-400",
-  resolved: "bg-gray-800 text-gray-500",
-};
 const ALERT_STATUS_LABEL = {
   open: "열림",
   acknowledged: "확인됨",
@@ -95,6 +86,18 @@ export function ServerDetail({ server }: ServerDetailProps) {
   );
   const { data: allAlerts } = useAlerts();
 
+  // 백엔드 가용 여부 확인 (오프라인이면 헬스 패널 숨김)
+  const [backendAvailable, setBackendAvailable] = useState(false);
+
+  useEffect(() => {
+    checkBackendAvailable().then(setBackendAvailable);
+  }, []);
+
+  const { data: gameHealth } = useServerHealth(server.id, {
+    enabled: backendAvailable,
+  });
+  const { data: trend } = useServerTrend(server.id, { enabled: backendAvailable });
+
   const serverAlerts = (allAlerts ?? []).filter(
     (a) => a.serverId === server.id
   );
@@ -105,7 +108,7 @@ export function ServerDetail({ server }: ServerDetailProps) {
       <div className="flex items-center gap-3">
         <Link
           href="/servers"
-          className="flex items-center gap-1.5 rounded-lg border border-gray-800 bg-gray-900 px-3 py-1.5 text-xs text-gray-400 transition-colors hover:border-gray-700 hover:text-white"
+          className="flex items-center gap-1.5 rounded-lg border border-border-default bg-bg-surface px-3 py-1.5 text-xs text-fg-muted transition-colors hover:border-border-subtle hover:text-fg-base"
         >
           <svg
             className="h-3.5 w-3.5"
@@ -124,74 +127,158 @@ export function ServerDetail({ server }: ServerDetailProps) {
         </Link>
       </div>
 
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold text-white">{server.name}</h1>
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[server.status]}`}
-              >
-                {STATUS_LABEL[server.status]}
-              </span>
+      <Card>
+        <CardContent className="p-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl font-bold text-fg-base">{server.name}</h1>
+                <Badge
+                  variant={
+                    server.status === "healthy"
+                      ? "ok"
+                      : server.status === "degraded"
+                        ? "warn"
+                        : "error"
+                  }
+                >
+                  {STATUS_LABEL[server.status]}
+                </Badge>
+              </div>
+              <p className="mt-1 text-sm text-fg-muted">
+                {REGION_LABEL[server.region] ?? server.region} · v{server.version}
+              </p>
             </div>
-            <p className="mt-1 text-sm text-gray-400">
-              {REGION_LABEL[server.region] ?? server.region} · v{server.version}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowAnalysis((v) => !v)}
-            className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-indigo-500"
-          >
-            <svg
-              className="h-3.5 w-3.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+            <Button
+              variant="accent"
+              size="sm"
+              onClick={() => setShowAnalysis((v) => !v)}
+              className="h-8 w-full gap-1.5 px-3 text-xs sm:w-auto"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
-            AI 분석
-          </button>
-        </div>
+              <svg
+                className="h-3.5 w-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              AI 분석
+            </Button>
+          </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4 text-sm">
-          <div>
-            <p className="text-gray-500 text-xs">플레이어</p>
-            <p className="mt-1 font-semibold text-white">
-              {server.playerCount}
-              <span className="text-gray-500 font-normal">
-                {" "}
-                / {server.maxPlayers}
-              </span>
-            </p>
+          <div className="mt-5 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+            <div>
+              <p className="text-xs text-fg-subtle">플레이어</p>
+              <p className="mt-1 font-semibold text-fg-base">
+                {server.playerCount}
+                <span className="font-normal text-fg-subtle">
+                  {" "}
+                  / {server.maxPlayers}
+                </span>
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-fg-subtle">업타임</p>
+              <p className="mt-1 font-semibold text-fg-base">
+                {formatUptime(server.uptimeSeconds)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-fg-subtle">마지막 Heartbeat</p>
+              <p className="mt-1 font-semibold text-fg-base">
+                {formatRelativeTime(server.lastHeartbeatAt)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-fg-subtle">용량</p>
+              <p className="mt-1 font-semibold text-fg-base">
+                {Math.round((server.playerCount / server.maxPlayers) * 100)}%
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-gray-500 text-xs">업타임</p>
-            <p className="mt-1 font-semibold text-white">
-              {formatUptime(server.uptimeSeconds)}
-            </p>
-          </div>
-          <div>
-            <p className="text-gray-500 text-xs">마지막 Heartbeat</p>
-            <p className="mt-1 font-semibold text-white">
-              {formatRelativeTime(server.lastHeartbeatAt)}
-            </p>
-          </div>
-          <div>
-            <p className="text-gray-500 text-xs">용량</p>
-            <p className="mt-1 font-semibold text-white">
-              {Math.round((server.playerCount / server.maxPlayers) * 100)}%
-            </p>
-          </div>
+        </CardContent>
+      </Card>
+
+      {/* 실시간 게임 서버 헬스 패널 — 백엔드 오프라인 시 자동 숨김 */}
+      {backendAvailable && gameHealth && (
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-fg-base">
+                실시간 게임 서버 헬스
+              </h2>
+              <Badge
+                variant={
+                  gameHealth.health === "GOOD"
+                    ? "ok"
+                    : gameHealth.health === "HIGH_LOAD" ||
+                        gameHealth.health === "CRITICAL"
+                      ? "error"
+                      : "warn"
+                }
+              >
+                {gameHealth.health}
+              </Badge>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+              <div>
+                <p className="text-xs text-fg-subtle">Ping</p>
+                <p className="mt-1 font-semibold text-fg-base">
+                  {gameHealth.ping >= 0 ? `${gameHealth.ping}ms` : "N/A"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-fg-subtle">게임 플레이어</p>
+                <p className="mt-1 font-semibold text-fg-base">
+                  {gameHealth.players}
+                  <span className="font-normal text-fg-subtle">
+                    {" "}
+                    / {gameHealth.maxPlayers}
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-fg-subtle">맵</p>
+                <p className="mt-1 font-semibold text-fg-base">
+                  {gameHealth.map}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-fg-subtle">지연 등급</p>
+                <p className="mt-1 font-semibold text-fg-base">
+                  {gameHealth.latencyCategory}
+                </p>
+              </div>
+            </div>
+            {gameHealth.reason && (
+              <p className="mt-3 text-xs text-fg-muted">{gameHealth.reason}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {backendAvailable && trend?.history && trend.history.length > 0 && (
+        <div>
+          <h2 className="mb-3 text-sm font-semibold text-fg-base">
+            게임 서버 플레이어 추이
+          </h2>
+          <MiniChart
+            label=""
+            data={trend.history.map((e) => ({
+              time: formatTime(e.timestamp),
+              value: e.players,
+            }))}
+            color="#6366f1"
+            unit="명"
+          />
         </div>
-      </div>
+      )}
 
       {showAnalysis && (
         <AnalysisPanel
@@ -201,23 +288,22 @@ export function ServerDetail({ server }: ServerDetailProps) {
       )}
 
       <div>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-white">성능 지표</h2>
-          <div className="flex items-center gap-1 rounded-lg border border-gray-800 bg-gray-900 p-1">
-            {RANGE_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setRange(opt.value)}
-                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-                  range === opt.value
-                    ? "bg-indigo-600 text-white"
-                    : "text-gray-400 hover:text-gray-200"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-sm font-semibold text-fg-base">성능 지표</h2>
+          <div className="w-full overflow-x-auto rounded-lg border border-border-default bg-bg-surface p-1 sm:w-auto">
+            <div className="flex min-w-max items-center gap-1">
+              {RANGE_OPTIONS.map((opt) => (
+                <Button
+                  key={opt.value}
+                  variant={range === opt.value ? "accent" : "ghost"}
+                  size="sm"
+                  onClick={() => setRange(opt.value)}
+                  className="h-7 px-3 text-xs"
+                >
+                  {opt.label}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -254,9 +340,9 @@ export function ServerDetail({ server }: ServerDetailProps) {
       </div>
 
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-white">관련 알림</h2>
+        <h2 className="mb-3 text-sm font-semibold text-fg-base">관련 알림</h2>
         {serverAlerts.length === 0 ? (
-          <div className="rounded-xl border border-gray-800 bg-gray-900 px-5 py-8 text-center text-sm text-gray-500">
+          <div className="rounded-xl border border-border-default bg-bg-surface px-5 py-8 text-center text-sm text-fg-subtle">
             이 서버에 대한 알림이 없습니다.
           </div>
         ) : (
@@ -264,28 +350,35 @@ export function ServerDetail({ server }: ServerDetailProps) {
             {serverAlerts.map((alert) => (
               <li
                 key={alert.id}
-                className="flex flex-wrap items-start gap-3 rounded-xl border border-gray-800 bg-gray-900 px-4 py-3"
+                className="flex flex-wrap items-start gap-3 rounded-xl border border-border-default bg-bg-surface px-4 py-3"
               >
-                <span
-                  className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${SEVERITY_BADGE[alert.severity]}`}
+                <Badge
+                  variant={alert.severity}
+                  className="mt-0.5 shrink-0"
                 >
                   {SEVERITY_LABEL[alert.severity]}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white">
+                </Badge>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-fg-base">
                     {alert.title}
                   </p>
-                  <p className="mt-0.5 text-xs text-gray-400">
+                  <p className="mt-0.5 text-xs text-fg-muted">
                     {alert.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
                   <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${ALERT_STATUS_BADGE[alert.status]}`}
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                      alert.status === "open"
+                        ? "bg-bg-elevated text-fg-muted"
+                        : alert.status === "acknowledged"
+                          ? "bg-interactive-accent/10 text-interactive-accent"
+                          : "bg-bg-base text-fg-subtle"
+                    }`}
                   >
                     {ALERT_STATUS_LABEL[alert.status]}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-fg-subtle">
                     {formatRelativeTime(alert.createdAt)}
                   </span>
                 </div>
