@@ -2,12 +2,239 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   PRIMITIVE TOKENS — 원시 값 (직접 사용 금지, semantic 참조용)
+   ============================================================ */
 :root {
-  --background: #030712;
-  --foreground: #f9fafb;
+  /* Gray */
+  --p-gray-0:   #ffffff;
+  --p-gray-50:  #f9fafb;
+  --p-gray-100: #f3f4f6;
+  --p-gray-200: #e5e7eb;
+  --p-gray-300: #d1d5db;
+  --p-gray-400: #9ca3af;
+  --p-gray-500: #6b7280;
+  --p-gray-600: #4b5563;
+  --p-gray-700: #374151;
+  --p-gray-800: #1f2937;
+  --p-gray-900: #111827;
+  --p-gray-950: #030712;
+
+  /* Zinc */
+  --p-zinc-100: #f4f4f5;
+  --p-zinc-200: #e4e4e7;
+  --p-zinc-300: #d4d4d8;
+  --p-zinc-400: #a1a1aa;
+  --p-zinc-500: #71717a;
+  --p-zinc-600: #52525b;
+  --p-zinc-700: #3f3f46;
+  --p-zinc-800: #27272a;
+  --p-zinc-900: #18181b;
+
+  /* Red */
+  --p-red-100: #fee2e2;
+  --p-red-300: #fca5a5;
+  --p-red-400: #f87171;
+  --p-red-500: #ef4444;
+  --p-red-600: #dc2626;
+  --p-red-700: #b91c1c;
+  --p-red-800: #991b1b;
+  --p-red-950: #450a0a;
+
+  /* Amber */
+  --p-amber-100: #fef3c7;
+  --p-amber-300: #fcd34d;
+  --p-amber-400: #fbbf24;
+  --p-amber-500: #f59e0b;
+  --p-amber-700: #b45309;
+  --p-amber-800: #92400e;
+  --p-amber-950: #451a03;
+
+  /* Green / Emerald */
+  --p-green-100: #dcfce7;
+  --p-green-300: #86efac;
+  --p-green-400: #4ade80;
+  --p-green-600: #16a34a;
+  --p-green-700: #15803d;
+  --p-green-800: #166534;
+  --p-green-950: #052e16;
+
+  /* Indigo */
+  --p-indigo-400: #818cf8;
+  --p-indigo-500: #6366f1;
+  --p-indigo-600: #4f46e5;
+
+  /* Typography scale */
+  --p-text-xs:   0.75rem;
+  --p-text-sm:   0.875rem;
+  --p-text-base: 1rem;
+  --p-text-lg:   1.125rem;
+  --p-text-xl:   1.25rem;
+  --p-text-2xl:  1.5rem;
+  --p-text-3xl:  1.875rem;
 }
 
-body {
-  background-color: var(--background);
-  color: var(--foreground);
+/* ============================================================
+   SEMANTIC TOKENS — LIGHT THEME (기본값)
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --color-bg-base:     var(--p-gray-50);
+  --color-bg-surface:  var(--p-gray-0);
+  --color-bg-elevated: var(--p-gray-100);
+  --color-bg-input:    var(--p-gray-0);
+  --color-bg-overlay:  rgba(0, 0, 0, 0.4);
+
+  /* Foregrounds */
+  --color-fg-base:       var(--p-gray-900);
+  --color-fg-muted:      var(--p-gray-500);
+  --color-fg-subtle:     var(--p-gray-400);
+  --color-fg-on-primary: var(--p-gray-900);
+
+  /* Borders */
+  --color-border-default: var(--p-gray-200);
+  --color-border-subtle:  var(--p-gray-300);
+  --color-border-focus:   var(--p-zinc-500);
+
+  /* Interactive */
+  --color-interactive-primary:       var(--p-zinc-900);
+  --color-interactive-primary-hover: var(--p-zinc-700);
+  --color-interactive-secondary:     var(--p-zinc-100);
+  --color-interactive-secondary-fg:  var(--p-zinc-900);
+  --color-interactive-danger:        var(--p-red-600);
+  --color-interactive-danger-hover:  var(--p-red-700);
+  --color-interactive-accent:        var(--p-indigo-600);
+  --color-interactive-accent-hover:  var(--p-indigo-500);
+
+  /* Status — 서버 상태 전용 레이어 (severity 포함) */
+  --status-ok-bg:        var(--p-green-100);
+  --status-ok-fg:        var(--p-green-700);
+  --status-ok-border:    var(--p-green-300);
+
+  --status-warn-bg:      var(--p-amber-100);
+  --status-warn-fg:      var(--p-amber-700);
+  --status-warn-border:  var(--p-amber-300);
+
+  --status-error-bg:     var(--p-red-100);
+  --status-error-fg:     var(--p-red-700);
+  --status-error-border: var(--p-red-300);
+
+  --status-unknown-bg:      var(--p-gray-100);
+  --status-unknown-fg:      var(--p-gray-500);
+  --status-unknown-border:  var(--p-gray-300);
+
+  /* Severity (alert 전용) */
+  --severity-critical-bg: var(--p-red-100);
+  --severity-critical-fg: var(--p-red-700);
+  --severity-warning-bg:  var(--p-amber-100);
+  --severity-warning-fg:  var(--p-amber-700);
+  --severity-info-bg:     #dbeafe;
+  --severity-info-fg:     #1d4ed8;
+
+  /* Z-index */
+  --z-base:     0;
+  --z-dropdown: 10;
+  --z-sticky:   20;
+  --z-overlay:  30;
+  --z-modal:    40;
+  --z-popover:  50;
+  --z-toast:    60;
+  --z-tooltip:  70;
+
+  /* Typography (semantic alias) */
+  --font-size-xs:   var(--p-text-xs);
+  --font-size-sm:   var(--p-text-sm);
+  --font-size-base: var(--p-text-base);
+  --font-size-lg:   var(--p-text-lg);
+  --font-size-xl:   var(--p-text-xl);
+  --font-size-2xl:  var(--p-text-2xl);
+  --font-size-3xl:  var(--p-text-3xl);
+
+  --font-weight-normal:   400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  --line-height-tight:   1.25;
+  --line-height-snug:    1.375;
+  --line-height-normal:  1.5;
+  --line-height-relaxed: 1.625;
+
+  /* 하위 호환 (기존 코드 유지) */
+  --background: var(--color-bg-base);
+  --foreground: var(--color-fg-base);
 }
+
+/* ============================================================
+   SEMANTIC TOKENS — DARK THEME
+   ============================================================ */
+.dark {
+  /* Backgrounds */
+  --color-bg-base:     var(--p-gray-950);
+  --color-bg-surface:  var(--p-gray-900);
+  --color-bg-elevated: var(--p-gray-800);
+  --color-bg-input:    var(--p-zinc-900);
+  --color-bg-overlay:  rgba(0, 0, 0, 0.6);
+
+  /* Foregrounds */
+  --color-fg-base:       var(--p-gray-50);
+  --color-fg-muted:      var(--p-gray-400);
+  --color-fg-subtle:     var(--p-gray-500);
+  --color-fg-on-primary: var(--p-gray-0);
+
+  /* Borders */
+  --color-border-default: var(--p-gray-800);
+  --color-border-subtle:  var(--p-gray-700);
+  --color-border-focus:   var(--p-zinc-400);
+
+  /* Interactive */
+  --color-interactive-primary:       var(--p-zinc-100);
+  --color-interactive-primary-hover: var(--p-zinc-200);
+  --color-interactive-secondary:     var(--p-zinc-800);
+  --color-interactive-secondary-fg:  var(--p-gray-100);
+  --color-interactive-danger:        var(--p-red-600);
+  --color-interactive-danger-hover:  var(--p-red-500);
+  --color-interactive-accent:        var(--p-indigo-600);
+  --color-interactive-accent-hover:  var(--p-indigo-500);
+
+  /* Status */
+  --status-ok-bg:        var(--p-green-950);
+  --status-ok-fg:        var(--p-green-400);
+  --status-ok-border:    var(--p-green-800);
+
+  --status-warn-bg:      var(--p-amber-950);
+  --status-warn-fg:      var(--p-amber-400);
+  --status-warn-border:  var(--p-amber-800);
+
+  --status-error-bg:     var(--p-red-950);
+  --status-error-fg:     var(--p-red-400);
+  --status-error-border: var(--p-red-800);
+
+  --status-unknown-bg:     var(--p-gray-800);
+  --status-unknown-fg:     var(--p-gray-400);
+  --status-unknown-border: var(--p-gray-700);
+
+  /* Severity */
+  --severity-critical-bg: var(--p-red-950);
+  --severity-critical-fg: var(--p-red-400);
+  --severity-warning-bg:  var(--p-amber-950);
+  --severity-warning-fg:  var(--p-amber-400);
+  --severity-info-bg:     #172554;
+  --severity-info-fg:     #93c5fd;
+
+  /* 하위 호환 */
+  --background: var(--color-bg-base);
+  --foreground: var(--color-fg-base);
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-fg-base);
+}
+
+/* 허용 패턴: 직접 hex/임의 색상 사용 금지, semantic 토큰 우선 */
+/* 금지: text-[#333], bg-[#1a1a1a], border-[rgba(...)] */
+/* 허용: text-fg-base, bg-surface, border-border-default, text-status-ok-fg */

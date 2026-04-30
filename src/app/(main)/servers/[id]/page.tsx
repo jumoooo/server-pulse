@@ -1,21 +1,14 @@
-"use client";
+import { ServerDetailPage } from "@/features/servers/client";
 
-import { useParams } from "next/navigation";
-import { useServerDetail } from "@/hooks/useServerDetail";
-import { ServerDetail } from "@/components/servers/ServerDetail";
-import { LoadingState } from "@/components/common/LoadingState";
-import { ErrorState } from "@/components/common/ErrorState";
+interface ServerDetailPageRouteProps {
+  params: Promise<{ id: string }>;
+}
 
-export default function ServerDetailPage() {
-  const params = useParams();
-  const id = typeof params.id === "string" ? params.id : null;
+export default async function ServerDetailPageRoute({
+  params,
+}: ServerDetailPageRouteProps) {
+  const { id } = await params;
+  const serverId = typeof id === "string" && id.trim().length > 0 ? id : null;
 
-  const { data: server, isLoading, error, refetch } = useServerDetail(id);
-
-  if (isLoading) return <LoadingState message="서버 정보를 불러오는 중..." />;
-  if (error)
-    return <ErrorState message={error.message} onRetry={() => refetch()} />;
-  if (!server) return <ErrorState message="서버를 찾을 수 없습니다." />;
-
-  return <ServerDetail server={server} />;
+  return <ServerDetailPage serverId={serverId} />;
 }

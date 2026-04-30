@@ -45,3 +45,21 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
 }
+
+export interface CreateServerInput {
+  name: string;
+  region: string;
+  version: string;
+  status?: ServerStatus;
+  maxPlayers?: number;
+}
+
+export interface UpdateServerInput {
+  name?: string;
+  region?: string;
+  version?: string;
+  status?: ServerStatus;
+  maxPlayers?: number;
+  playerCount?: number;
+  uptimeSeconds?: number;
+}
