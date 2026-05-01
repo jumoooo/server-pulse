@@ -11,6 +11,7 @@ import { PlayerChart } from "@/components/dashboard/PlayerChart";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
+import { REGION_LABEL } from "@/components/servers/ServerList";
 import { Badge } from "@/components/ui/badge";
 import { getMetrics } from "@/lib/mockData";
 import type { ServerStatus } from "@/types/server";
@@ -23,18 +24,21 @@ const STATUS_LABEL: Record<ServerStatus, string> = {
 
 export default function DashboardPage() {
   const { data: servers, isLoading, error, refetch } = useServers();
+  const [backendAvailable, setBackendAvailable] = useState(false);
+
+  useEffect(() => {
+    checkBackendAvailable().then(setBackendAvailable);
+  }, []);
+
+  const { data: overview } = useServerOverview({
+    enabled: backendAvailable,
+  });
+
+  const list = servers ?? [];
 
   if (isLoading) return <LoadingState message="서버 데이터를 불러오는 중..." />;
   if (error)
     return <ErrorState message={error.message} onRetry={() => refetch()} />;
-
-  const list = servers ?? [];
-
-  const [backendAvailable, setBackendAvailable] = useState(false);
-  useEffect(() => {
-    checkBackendAvailable().then(setBackendAvailable);
-  }, []);
-  const { data: overview } = useServerOverview();
 
   const healthyCount = list.filter((s) => s.status === "healthy").length;
   const degradedCount = list.filter((s) => s.status === "degraded").length;
@@ -85,7 +89,7 @@ export default function DashboardPage() {
             {overview.servers.map((gs) => (
               <div
                 key={gs.id}
-                className="rounded-xl border border-border-default bg-bg-surface p-4"
+                className="rounded-xl border border-border-default bg-bg-surface p-5 transition-colors hover:bg-bg-elevated"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
@@ -155,7 +159,7 @@ export default function DashboardPage() {
                         {server.name}
                       </p>
                       <p className="mt-0.5 text-xs text-fg-muted">
-                        {server.region}
+                        {REGION_LABEL[server.region] ?? server.region}
                       </p>
                     </div>
                     <Badge

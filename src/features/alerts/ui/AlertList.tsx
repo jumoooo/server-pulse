@@ -30,7 +30,7 @@ function formatRelativeTime(iso: string): string {
 
 export function AlertList({ alerts, onStatusChange, isPending }: AlertListProps) {
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-3">
       {alerts.map((alert) => (
         <li key={alert.id}>
           <Card

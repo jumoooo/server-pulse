@@ -88,7 +88,7 @@
   /* Foregrounds */
   --color-fg-base:       var(--p-gray-900);
   --color-fg-muted:      var(--p-gray-500);
-  --color-fg-subtle:     var(--p-gray-400);
+  --color-fg-subtle:     var(--p-gray-500);
   --color-fg-on-primary: var(--p-gray-900);
 
   /* Borders */
@@ -179,7 +179,7 @@
   /* Foregrounds */
   --color-fg-base:       var(--p-gray-50);
   --color-fg-muted:      var(--p-gray-400);
-  --color-fg-subtle:     var(--p-gray-500);
+  --color-fg-subtle:     var(--p-gray-400);
   --color-fg-on-primary: var(--p-gray-0);
 
   /* Borders */
