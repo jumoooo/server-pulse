@@ -108,8 +108,8 @@ export function AlertsPageContent() {
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="w-full overflow-x-auto rounded-lg border border-border-default bg-bg-surface p-1">
-          <div className="flex min-w-max items-center gap-1">
+        <div className="w-fit overflow-x-auto rounded-lg border border-border-default bg-bg-surface p-1">
+          <div className="flex items-center gap-1">
             {SEVERITY_OPTIONS.map((option) => (
               <button
                 key={option.value}
@@ -127,8 +127,8 @@ export function AlertsPageContent() {
           </div>
         </div>
 
-        <div className="w-full overflow-x-auto rounded-lg border border-border-default bg-bg-surface p-1">
-          <div className="flex min-w-max items-center gap-1">
+        <div className="w-fit overflow-x-auto rounded-lg border border-border-default bg-bg-surface p-1">
+          <div className="flex items-center gap-1">
             {ALERT_STATUS_OPTIONS.map((option) => (
               <button
                 key={option.value}
