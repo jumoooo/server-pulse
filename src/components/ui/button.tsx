@@ -16,7 +16,7 @@ const buttonVariants = cva(
           "border border-border-default bg-bg-surface text-fg-base hover:bg-bg-elevated",
         ghost: "text-fg-base hover:bg-bg-elevated",
         destructive:
-          "bg-interactive-danger text-fg-on-primary hover:bg-interactive-danger-hover",
+          "bg-interactive-danger text-fg-on-danger hover:bg-interactive-danger-hover",
         accent:
           "bg-interactive-accent text-fg-on-primary hover:bg-interactive-accent-hover",
       },

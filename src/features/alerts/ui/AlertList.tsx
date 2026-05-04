@@ -44,12 +44,12 @@ export function AlertList({ alerts, onStatusChange, isPending }: AlertListProps)
               alert.status === "resolved" ? "opacity-50" : ""
             }`}
           >
-            <CardContent className="p-5">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div className="flex min-w-0 gap-3">
+            <CardContent className="px-5 py-4">
+              <div className="flex items-center gap-4">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
                   <Badge
                     variant={alert.severity}
-                    className="mt-0.5 inline-flex shrink-0 items-center gap-1"
+                    className="inline-flex shrink-0 items-center gap-1 rounded-md"
                   >
                     {SEVERITY_ICON[alert.severity]}
                     {SEVERITY_LABEL[alert.severity]}
@@ -64,11 +64,6 @@ export function AlertList({ alerts, onStatusChange, isPending }: AlertListProps)
                       >
                         {alert.serverName}
                       </Link>
-                    </div>
-                    <p className="mt-2 text-sm leading-relaxed text-fg-muted">
-                      {alert.description}
-                    </p>
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
                       <span className="rounded-full border border-border-default bg-bg-elevated px-2.5 py-1 text-xs font-medium text-fg-muted">
                         {formatRelativeTime(alert.createdAt)}
                       </span>
@@ -84,10 +79,11 @@ export function AlertList({ alerts, onStatusChange, isPending }: AlertListProps)
                         {ALERT_STATUS_LABEL[alert.status]}
                       </span>
                     </div>
+                    <p className="line-clamp-1 text-xs text-fg-muted">{alert.description}</p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 lg:min-w-[9rem] lg:justify-end">
+                <div className="shrink-0 flex items-center gap-2">
                   {alert.status === "open" && (
                     <Button
                       variant="outline"
