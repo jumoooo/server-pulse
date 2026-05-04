@@ -93,16 +93,26 @@ export function AlertsPageContent() {
   const openCount = allAlerts.filter((alert) => alert.status === "open").length;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-fg-base">알림</h1>
-        <div className="mt-1 flex flex-wrap items-center gap-2.5 text-sm text-fg-muted">
+        <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-fg-muted">
           <span>전체 {allAlerts.length}개</span>
           {criticalCount > 0 && (
-            <span className="text-severity-critical-fg">심각 {criticalCount}개</span>
+            <>
+              <span aria-hidden className="text-fg-subtle">
+                ·
+              </span>
+              <span className="text-severity-critical-fg">심각 {criticalCount}개</span>
+            </>
           )}
           {openCount > 0 && (
-            <span className="text-severity-warning-fg">열림 {openCount}개</span>
+            <>
+              <span aria-hidden className="text-fg-subtle">
+                ·
+              </span>
+              <span className="text-severity-warning-fg">열림 {openCount}개</span>
+            </>
           )}
         </div>
       </div>
