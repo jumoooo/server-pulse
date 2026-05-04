@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AlertList } from "@/components/alerts/AlertList";
+import { AlertList } from "@/features/alerts/ui/AlertList";
 import type { Alert } from "@/types/server";
 
 vi.mock("next/link", () => ({
