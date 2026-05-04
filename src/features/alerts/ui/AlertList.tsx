@@ -49,7 +49,7 @@ export function AlertList({ alerts, onStatusChange, isPending }: AlertListProps)
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   <Badge
                     variant={alert.severity}
-                    className="inline-flex shrink-0 items-center gap-1 rounded-md"
+                    className="inline-flex shrink-0 items-center gap-1 rounded-md py-1.5"
                   >
                     {SEVERITY_ICON[alert.severity]}
                     {SEVERITY_LABEL[alert.severity]}

@@ -53,19 +53,22 @@ export function ServerList({ servers }: ServerListProps) {
               router.push(`/servers/${server.id}`);
             }
           }}
-          className="group rounded-xl border border-border-default bg-bg-surface p-5 text-left transition-all hover:border-border-subtle hover:bg-bg-elevated hover:ring-1 hover:ring-interactive-accent/30 focus:outline-none focus:ring-2 focus:ring-interactive-accent"
+          className="group rounded-2xl border border-border-default bg-bg-surface p-5 text-left transition-all hover:border-border-subtle hover:bg-bg-elevated focus:outline-none focus:ring-2 focus:ring-interactive-accent"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
+              <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-fg-subtle">
+                Game Server
+              </p>
+              <div className="mt-2 flex items-center gap-2">
                 <span
                   className={`inline-block h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[server.status]}`}
                 />
-                <h3 className="truncate text-sm font-semibold text-fg-base transition-colors group-hover:text-interactive-accent">
+                <h3 className="truncate text-base font-semibold text-fg-base transition-colors group-hover:text-interactive-accent">
                   {server.name}
                 </h3>
               </div>
-              <p className="mt-1 text-xs text-fg-muted">
+              <p className="mt-1 text-sm text-fg-muted">
                 {REGION_LABEL[server.region] ?? server.region}
               </p>
             </div>
@@ -83,33 +86,33 @@ export function ServerList({ servers }: ServerListProps) {
             </Badge>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
-            <div>
+          <div className="mt-5 grid grid-cols-2 gap-3 text-xs">
+            <div className="rounded-xl border border-border-default bg-bg-elevated p-3 group-hover:bg-bg-surface">
               <p className="text-fg-subtle">플레이어</p>
-              <p className="mt-0.5 font-medium text-fg-base">
+              <p className="mt-1 text-sm font-semibold text-fg-base">
                 {server.playerCount}
                 <span className="text-fg-subtle"> / {server.maxPlayers}</span>
               </p>
             </div>
-            <div>
+            <div className="rounded-xl border border-border-default bg-bg-elevated p-3 group-hover:bg-bg-surface">
               <p className="text-fg-subtle">버전</p>
-              <p className="mt-0.5 font-medium text-fg-base">{server.version}</p>
+              <p className="mt-1 text-sm font-semibold text-fg-base">{server.version}</p>
             </div>
-            <div>
+            <div className="rounded-xl border border-border-default bg-bg-elevated p-3 group-hover:bg-bg-surface">
               <p className="text-fg-subtle">업타임</p>
-              <p className="mt-0.5 font-medium text-fg-base">
+              <p className="mt-1 text-sm font-semibold text-fg-base">
                 {formatUptime(server.uptimeSeconds)}
               </p>
             </div>
-            <div>
-              <p className="text-fg-subtle">용량</p>
-              <p className="mt-0.5 font-medium text-fg-base">
+            <div className="rounded-xl border border-border-default bg-bg-elevated p-3 group-hover:bg-bg-surface">
+              <p className="text-fg-subtle">가동률</p>
+              <p className="mt-1 text-sm font-semibold text-fg-base">
                 {Math.round((server.playerCount / server.maxPlayers) * 100)}%
               </p>
             </div>
           </div>
           <div
-            className="mt-4 border-t border-border-default pt-3"
+            className="mt-5 border-t border-border-default pt-4"
             onClick={(event) => event.stopPropagation()}
           >
             <DeleteServerButton serverId={server.id} serverName={server.name} />
