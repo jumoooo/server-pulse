@@ -91,6 +91,8 @@ export function AlertsPageContent() {
     (alert) => alert.severity === "critical"
   ).length;
   const openCount = allAlerts.filter((alert) => alert.status === "open").length;
+  const filterButtonBase =
+    "whitespace-nowrap rounded-md px-3 py-1.5 text-xs font-medium transition-colors";
 
   return (
     <div className="space-y-5">
@@ -107,47 +109,81 @@ export function AlertsPageContent() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
-        <div className="w-fit overflow-x-auto rounded-lg border border-border-default bg-bg-surface p-1">
-          <div className="flex items-center gap-1">
-            {SEVERITY_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => updateFilters({ severity: option.value })}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                  severityFilter === option.value
-                    ? SEVERITY_ACTIVE[option.value]
-                    : "text-fg-muted hover:text-fg-base"
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
+      <div className="rounded-2xl border border-border-default bg-bg-surface p-4 sm:p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-fg-base">필터</p>
+            <p className="mt-1 text-sm text-fg-muted">
+              심각도와 상태를 선택해 알림을 빠르게 좁혀봐요.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full border border-border-default bg-bg-elevated px-3 py-1 text-xs font-medium text-fg-muted">
+              전체 {allAlerts.length}개
+            </span>
+            <span className="rounded-full border border-status-error-border bg-status-error-bg px-3 py-1 text-xs font-medium text-status-error-fg">
+              심각 {criticalCount}개
+            </span>
+            <span className="rounded-full border border-status-warn-border bg-status-warn-bg px-3 py-1 text-xs font-medium text-status-warn-fg">
+              열림 {openCount}개
+            </span>
           </div>
         </div>
 
-        <div className="w-fit overflow-x-auto rounded-lg border border-border-default bg-bg-surface p-1">
-          <div className="flex items-center gap-1">
-            {ALERT_STATUS_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => updateFilters({ status: option.value })}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
-                  statusFilter === option.value
-                    ? STATUS_ACTIVE[option.value]
-                    : "text-fg-muted hover:text-fg-base"
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          <div className="space-y-2">
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-fg-subtle">
+              Severity
+            </p>
+            <div className="max-w-full overflow-x-auto">
+              <div className="inline-flex w-fit items-center gap-1 rounded-xl border border-border-default bg-bg-elevated p-1">
+                {SEVERITY_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => updateFilters({ severity: option.value })}
+                    className={`${filterButtonBase} ${
+                      severityFilter === option.value
+                        ? SEVERITY_ACTIVE[option.value]
+                        : "text-fg-muted hover:bg-bg-surface hover:text-fg-base"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-fg-subtle">
+              Status
+            </p>
+            <div className="max-w-full overflow-x-auto">
+              <div className="inline-flex w-fit items-center gap-1 rounded-xl border border-border-default bg-bg-elevated p-1">
+                {ALERT_STATUS_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => updateFilters({ status: option.value })}
+                    className={`${filterButtonBase} ${
+                      statusFilter === option.value
+                        ? STATUS_ACTIVE[option.value]
+                        : "text-fg-muted hover:bg-bg-surface hover:text-fg-base"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <p className="text-xs text-fg-subtle">{filteredAlerts.length}개 표시</p>
+      <p className="text-sm text-fg-muted">
+        현재 조건으로 <span className="font-semibold text-fg-base">{filteredAlerts.length}개</span>가 표시되고 있어요.
+      </p>
 
       {filteredAlerts.length === 0 ? (
         <EmptyState message="조건에 맞는 알림이 없습니다." />

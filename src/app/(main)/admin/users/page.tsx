@@ -128,18 +128,23 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-fg-base">사용자 관리</h1>
-        <span className="text-sm text-fg-muted">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-fg-base">사용자 관리</h1>
+          <p className="mt-1 text-sm text-fg-muted">
+            회원 상태와 권한을 관리하고 승인·거절 처리를 할 수 있어요.
+          </p>
+        </div>
+        <span className="rounded-full border border-border-default bg-bg-elevated px-3 py-1 text-sm font-medium text-fg-muted">
           총 {users.length}명
         </span>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border-default bg-bg-surface">
+      <div className="overflow-hidden rounded-2xl border border-border-default bg-bg-surface">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-border-default bg-bg-base">
+              <tr className="border-b border-border-default bg-bg-elevated">
                 <th className="whitespace-nowrap px-4 py-3 font-medium text-fg-muted">
                   이메일
                 </th>
@@ -204,7 +209,9 @@ export default async function AdminUsersPage() {
                         <PendingActions user={user} />
                       )}
                       {user.status === "active" && (
-                        <RoleActions user={user} />
+                        <div className="flex justify-end">
+                          <RoleActions user={user} />
+                        </div>
                       )}
                     </td>
                   </tr>
