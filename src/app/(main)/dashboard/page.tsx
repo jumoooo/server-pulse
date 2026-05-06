@@ -11,6 +11,7 @@ import { PlayerChart } from "@/components/dashboard/PlayerChart";
 import { LoadingState } from "@/components/common/LoadingState";
 import { ErrorState } from "@/components/common/ErrorState";
 import { EmptyState } from "@/components/common/EmptyState";
+import { REGION_LABEL } from "@/components/servers/ServerList";
 import { Badge } from "@/components/ui/badge";
 import { getMetrics } from "@/lib/mockData";
 import type { ServerStatus } from "@/types/server";
@@ -23,18 +24,21 @@ const STATUS_LABEL: Record<ServerStatus, string> = {
 
 export default function DashboardPage() {
   const { data: servers, isLoading, error, refetch } = useServers();
+  const [backendAvailable, setBackendAvailable] = useState(false);
+
+  useEffect(() => {
+    checkBackendAvailable().then(setBackendAvailable);
+  }, []);
+
+  const { data: overview } = useServerOverview({
+    enabled: backendAvailable,
+  });
+
+  const list = servers ?? [];
 
   if (isLoading) return <LoadingState message="서버 데이터를 불러오는 중..." />;
   if (error)
     return <ErrorState message={error.message} onRetry={() => refetch()} />;
-
-  const list = servers ?? [];
-
-  const [backendAvailable, setBackendAvailable] = useState(false);
-  useEffect(() => {
-    checkBackendAvailable().then(setBackendAvailable);
-  }, []);
-  const { data: overview } = useServerOverview();
 
   const healthyCount = list.filter((s) => s.status === "healthy").length;
   const degradedCount = list.filter((s) => s.status === "degraded").length;
@@ -78,21 +82,34 @@ export default function DashboardPage() {
 
       {backendAvailable && overview?.servers && overview.servers.length > 0 && (
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-fg-base">
-            게임 서버 실시간 현황
-          </h2>
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold text-fg-base">
+                게임 서버 실시간 현황
+              </h2>
+              <p className="mt-1 text-sm text-fg-muted">
+                실시간 Ping · 플레이어 · 부하 상태를 한눈에 확인할 수 있어요.
+              </p>
+            </div>
+            <span className="rounded-full border border-border-default bg-bg-elevated px-3 py-1 text-xs font-medium text-fg-muted">
+              {overview.servers.length}개 서버 연결됨
+            </span>
+          </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {overview.servers.map((gs) => (
               <div
                 key={gs.id}
-                className="rounded-xl border border-border-default bg-bg-surface p-4"
+                className="rounded-2xl border border-border-default bg-bg-surface p-5 transition-colors hover:border-border-subtle hover:bg-bg-elevated"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-fg-base">
+                    <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-fg-subtle">
+                      Live Game
+                    </p>
+                    <p className="mt-2 truncate text-base font-semibold text-fg-base">
                       {gs.name}
                     </p>
-                    <p className="mt-0.5 text-xs text-fg-muted">{gs.game}</p>
+                    <p className="mt-1 text-sm text-fg-muted">{gs.game}</p>
                   </div>
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -106,8 +123,8 @@ export default function DashboardPage() {
                     {gs.latencyCategory}
                   </span>
                 </div>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <div>
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border border-border-default bg-bg-elevated p-3">
                     <p className="text-xs text-fg-subtle">플레이어</p>
                     <p className="mt-0.5 text-sm font-semibold text-fg-base">
                       {gs.players}
@@ -117,7 +134,7 @@ export default function DashboardPage() {
                       </span>
                     </p>
                   </div>
-                  <div>
+                  <div className="rounded-xl border border-border-default bg-bg-elevated p-3">
                     <p className="text-xs text-fg-subtle">Ping</p>
                     <p className="mt-0.5 text-sm font-semibold text-fg-base">
                       {gs.ping >= 0 ? `${gs.ping}ms` : "N/A"}
@@ -143,19 +160,22 @@ export default function DashboardPage() {
           {problemServers.length === 0 ? (
             <EmptyState message="문제가 있는 서버가 없습니다." />
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {problemServers.map((server) => (
                 <li key={server.id}>
                   <Link
                     href={`/servers/${server.id}`}
-                    className="flex items-center justify-between rounded-lg border border-border-default bg-bg-elevated/50 px-4 py-3 transition-colors hover:border-border-subtle hover:bg-bg-elevated"
+                    className="flex items-start justify-between gap-3 rounded-xl border border-border-default bg-bg-elevated px-4 py-4 transition-colors hover:border-border-subtle hover:bg-bg-surface"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-fg-base">
+                      <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-fg-subtle">
+                        Needs Attention
+                      </p>
+                      <p className="mt-2 truncate text-sm font-semibold text-fg-base">
                         {server.name}
                       </p>
-                      <p className="mt-0.5 text-xs text-fg-muted">
-                        {server.region}
+                      <p className="mt-1 text-sm text-fg-muted">
+                        {REGION_LABEL[server.region] ?? server.region}
                       </p>
                     </div>
                     <Badge

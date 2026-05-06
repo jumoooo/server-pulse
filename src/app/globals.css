@@ -87,9 +87,10 @@
 
   /* Foregrounds */
   --color-fg-base:       var(--p-gray-900);
-  --color-fg-muted:      var(--p-gray-500);
-  --color-fg-subtle:     var(--p-gray-400);
-  --color-fg-on-primary: var(--p-gray-900);
+  --color-fg-muted:      var(--p-gray-600);
+  --color-fg-subtle:     var(--p-gray-600);
+  --color-fg-on-primary: var(--p-gray-0);
+  --color-fg-on-danger:  var(--p-gray-0);
 
   /* Borders */
   --color-border-default: var(--p-gray-200);
@@ -178,9 +179,10 @@
 
   /* Foregrounds */
   --color-fg-base:       var(--p-gray-50);
-  --color-fg-muted:      var(--p-gray-400);
-  --color-fg-subtle:     var(--p-gray-500);
-  --color-fg-on-primary: var(--p-gray-0);
+  --color-fg-muted:      var(--p-gray-300);
+  --color-fg-subtle:     var(--p-gray-400);
+  --color-fg-on-primary: var(--p-gray-900);
+  --color-fg-on-danger:  var(--p-gray-0);
 
   /* Borders */
   --color-border-default: var(--p-gray-800);

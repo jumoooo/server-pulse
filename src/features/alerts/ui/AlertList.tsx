@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AlertCircle, AlertTriangle, Info } from "lucide-react";
 import type { Alert, AlertStatus } from "@/types/server";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,11 @@ interface AlertListProps {
 }
 
 const SEVERITY_LABEL = { critical: "심각", warning: "경고", info: "정보" };
+const SEVERITY_ICON = {
+  critical: <AlertCircle aria-hidden className="size-3 shrink-0" />,
+  warning: <AlertTriangle aria-hidden className="size-3 shrink-0" />,
+  info: <Info aria-hidden className="size-3 shrink-0" />,
+};
 
 const ALERT_STATUS_LABEL = {
   open: "열림",
@@ -30,56 +36,61 @@ function formatRelativeTime(iso: string): string {
 
 export function AlertList({ alerts, onStatusChange, isPending }: AlertListProps) {
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-4">
       {alerts.map((alert) => (
         <li key={alert.id}>
           <Card
-            className={`transition-opacity ${
+            className={`overflow-hidden transition-all hover:border-border-subtle hover:bg-bg-surface ${
               alert.status === "resolved" ? "opacity-50" : ""
             }`}
           >
-            <CardContent className="p-4">
-              <div className="flex flex-wrap items-start gap-3">
-                <Badge variant={alert.severity} className="mt-0.5 shrink-0">
-                  {SEVERITY_LABEL[alert.severity]}
-                </Badge>
+            <CardContent className="px-5 py-4">
+              <div className="flex items-center gap-4">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <Badge
+                    variant={alert.severity}
+                    className="inline-flex shrink-0 items-center gap-1 rounded-md py-1.5"
+                  >
+                    {SEVERITY_ICON[alert.severity]}
+                    {SEVERITY_LABEL[alert.severity]}
+                  </Badge>
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                    <p className="text-sm font-medium text-fg-base">{alert.title}</p>
-                    <Link
-                      href={`/servers/${alert.serverId}`}
-                      className="text-xs text-interactive-accent hover:text-interactive-accent/80 hover:underline"
-                    >
-                      {alert.serverName}
-                    </Link>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <p className="text-sm font-semibold text-fg-base">{alert.title}</p>
+                      <Link
+                        href={`/servers/${alert.serverId}`}
+                        className="text-xs font-medium text-interactive-accent hover:text-interactive-accent/80 hover:underline"
+                      >
+                        {alert.serverName}
+                      </Link>
+                      <span className="rounded-full border border-border-default bg-bg-elevated px-2.5 py-1 text-xs font-medium text-fg-muted">
+                        {formatRelativeTime(alert.createdAt)}
+                      </span>
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                          alert.status === "open"
+                            ? "bg-status-warn-bg text-status-warn-fg"
+                            : alert.status === "acknowledged"
+                              ? "bg-interactive-accent/10 text-interactive-accent"
+                              : "bg-status-ok-bg text-status-ok-fg"
+                        }`}
+                      >
+                        {ALERT_STATUS_LABEL[alert.status]}
+                      </span>
+                    </div>
+                    <p className="line-clamp-1 text-xs text-fg-muted">{alert.description}</p>
                   </div>
-                  <p className="mt-1 text-xs text-fg-muted">{alert.description}</p>
-                  <p className="mt-1.5 text-xs text-fg-subtle">
-                    {formatRelativeTime(alert.createdAt)}
-                  </p>
                 </div>
 
-                <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      alert.status === "open"
-                        ? "bg-status-warn-bg text-status-warn-fg"
-                        : alert.status === "acknowledged"
-                          ? "bg-interactive-accent/10 text-interactive-accent"
-                          : "bg-status-ok-bg text-status-ok-fg"
-                    }`}
-                  >
-                    {ALERT_STATUS_LABEL[alert.status]}
-                  </span>
-
+                <div className="shrink-0 flex items-center gap-2">
                   {alert.status === "open" && (
                     <Button
                       variant="outline"
                       size="sm"
                       disabled={isPending}
                       onClick={() => onStatusChange(alert.id, "acknowledged")}
-                      className="h-7 px-3 text-xs"
+                      className="h-8 px-3 text-xs"
                     >
                       확인
                     </Button>
@@ -91,7 +102,7 @@ export function AlertList({ alerts, onStatusChange, isPending }: AlertListProps)
                       size="sm"
                       disabled={isPending}
                       onClick={() => onStatusChange(alert.id, "resolved")}
-                      className="h-7 border border-status-ok-border bg-status-ok-bg px-3 text-xs text-status-ok-fg hover:bg-status-ok-bg/80"
+                      className="h-8 border border-status-ok-border bg-status-ok-bg px-3 text-xs text-status-ok-fg hover:bg-status-ok-bg/80"
                     >
                       해결
                     </Button>

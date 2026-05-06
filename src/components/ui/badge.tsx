@@ -14,9 +14,12 @@ const badgeVariants = cva(
           "border border-status-error-border bg-status-error-bg text-status-error-fg",
         unknown:
           "border border-status-unknown-border bg-status-unknown-bg text-status-unknown-fg",
-        critical: "bg-severity-critical-bg text-severity-critical-fg",
-        warning: "bg-severity-warning-bg text-severity-warning-fg",
-        info: "bg-severity-info-bg text-severity-info-fg",
+        critical:
+          "bg-severity-critical-bg text-severity-critical-fg ring-1 ring-severity-critical-fg/30",
+        warning:
+          "bg-severity-warning-bg text-severity-warning-fg ring-1 ring-severity-warning-fg/30",
+        info:
+          "bg-severity-info-bg text-severity-info-fg ring-1 ring-severity-info-fg/20",
         default: "bg-bg-elevated text-fg-muted",
         outline: "border border-border-default bg-transparent text-fg-muted",
       },
