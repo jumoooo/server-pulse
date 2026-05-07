@@ -1,21 +1,13 @@
-import NextAuth, { type DefaultSession } from "next-auth";
+import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-
-declare module "next-auth" {
-  interface User {
-    roles?: string[];
-  }
-  interface Session {
-    user: { id: string; roles: string[] } & DefaultSession["user"];
-  }
-}
+import { authConfig } from "@/lib/auth.config";
 
 /**
  * Vercel·스테이징·운영 등 배포 조건에서는 AUTH_SECRET 누락 시 즉시 실패.
- * 로컬 `NODE_ENV=development`에서는 경고 + 개발용 fallback 허용.
- * 비 Vercel 운영 서버는 `AUTH_STRICT=true` 로 강제할 수 있습니다.
+ * 로컬 `NODE_ENV=development`에서는 경고와 함께 개발용 fallback을 허용해요.
+ * 비 Vercel 운영 서버는 `AUTH_STRICT=true` 로 강제할 수 있어요.
  */
 function resolveAuthSecret(): string {
   const fromEnv =
@@ -39,22 +31,17 @@ function resolveAuthSecret(): string {
 
   if (requireStrictSecret) {
     throw new Error(
-      "[auth] 배포/스테이징 환경에서는 AUTH_SECRET(또는 NEXTAUTH_SECRET)이 필수입니다. openssl rand -base64 32 로 생성해 .env / 호스트 시크릿에 설정하세요."
+      "[auth] 배포/스테이징 환경에서는 AUTH_SECRET(또는 NEXTAUTH_SECRET)이 필수입니다."
     );
   }
 
-  console.warn(
-    "[auth] AUTH_SECRET 없음 — 개발용 fallback secret을 사용합니다. 운영·Vercel·AUTH_STRICT 환경에서는 설정이 필수입니다."
-  );
+  console.warn("[auth] AUTH_SECRET 없음 — 개발용 fallback secret을 사용합니다.");
   return "dev-only-insecure-auth-secret";
 }
 
-const authSecret = resolveAuthSecret();
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  secret: authSecret,
-  session: { strategy: "jwt" },
-  pages: { signIn: "/login" },
+  ...authConfig,
+  secret: resolveAuthSecret(),
   providers: [
     Credentials({
       name: "Credentials",
@@ -92,33 +79,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.userId = user.id;
-        token.roles = (user as { roles?: string[] }).roles ?? [];
-      }
-      return token;
-    },
-    session({ session, token }) {
-      const t = token as { userId?: string; roles?: string[] };
-      session.user.id = t.userId ?? "";
-      session.user.roles = t.roles ?? [];
-      return session;
-    },
-    authorized({ request, auth }) {
-      const { pathname } = request.nextUrl;
-
-      if (pathname.startsWith("/login") || pathname.startsWith("/signup")) {
-        return true;
-      }
-
-      if (pathname.startsWith("/admin")) {
-        const roles = (auth?.user as { roles?: string[] } | undefined)?.roles ?? [];
-        return roles.includes("admin");
-      }
-
-      return !!auth;
-    },
-  },
 });

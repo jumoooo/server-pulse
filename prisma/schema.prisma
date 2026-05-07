@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ── Auth Models ──
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  displayName  String
+  status       String     @default("pending") // pending | active | rejected | disabled
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  approvedAt   DateTime?
+  approvedBy   String?
+  userRoles    UserRole[]
+}
+
+model Role {
+  id          String     @id @default(cuid())
+  name        String     @unique // user | admin
+  description String     @default("")
+  userRoles   UserRole[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+// ── Domain Models ──
+
+model Server {
+  id              String        @id
+  name            String
+  region          String
+  version         String
+  status          String        @default("healthy")
+  uptimeSeconds   Int           @default(0)
+  lastHeartbeatAt DateTime      @default(now())
+  playerCount     Int           @default(0)
+  maxPlayers      Int           @default(100)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  alerts          Alert[]
+  metrics         MetricPoint[]
+}
+
+model Alert {
+  id          String    @id
+  serverId    String
+  severity    String
+  status      String    @default("open")
+  title       String
+  description String
+  ruleId      String
+  createdAt   DateTime  @default(now())
+  resolvedAt  DateTime?
+  server      Server    @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@index([serverId])
+}
+
+model MetricPoint {
+  id          String   @id
+  serverId    String
+  timestamp   DateTime @default(now())
+  cpuUsage    Float
+  memoryUsage Float
+  rttMs       Float
+  errorRate   Float
+  playerCount Int
+  server      Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@index([serverId, timestamp])
+}
