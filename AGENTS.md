@@ -17,7 +17,7 @@
 - 오타, 작은 문구 수정, 명백한 잡수정처럼 **소규모 단발 수정**은 issue 없이 바로 진행할 수 있어요.
 - issue가 필요한 작업이면 사용자에게 짧게 확인하고, 승인되면 이 저장소에 issue를 만든 뒤 브랜치/커밋/PR를 진행해요.
 - frontend 기능, 버그, 테스트, 빌드 관련 작업은 **이 저장소에서** 이슈를 만들고 브랜치/커밋/PR를 진행해요.
-- root 운영 문서, handoff, gate, harness, `.cursor`, `.codex`, `.agents` 변경은 **`jumoooo/server-pulse-root-ops`** 에서 처리해요.
+- root 운영 문서, handoff, gate, harness, Codex/Claude 운영 자산 변경은 **`jumoooo/server-pulse-root-ops`** 에서 처리해요.
 - backend API 계약이나 env가 함께 바뀌면 **root parent issue + backend child issue** 구조로 나눠서 진행해요.
 - 같은 저장소 이슈를 닫을 때만 `Closes #번호`를 써요.
 - root 상위 이슈는 `Refs jumoooo/server-pulse-root-ops#번호`로 연결해요.
@@ -25,8 +25,7 @@
 ## 운영 원칙
 
 - 프론트 패키지 구현은 이 파일과 루트 [AGENTS.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\AGENTS.md)를 함께 따릅니다.
-- 상세 라우팅·역할·디자인 토큰·Gemini 안전 실행 정본은 [frontend/.cursor/AGENTS.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\frontend\.cursor\AGENTS.md)에 있습니다.
-- `.cursor` 자산은 기존 SoT로 유지하고, `.codex`/`.agents`는 Codex 병행 레이어로만 추가합니다.
+- 운영 정본은 `.ai/` (handoff/gate/harness) + `.codex/` (Codex rules/agents)입니다. `.cursor`는 자료 참고만 허용, 직접 의존 금지.
 - 사용자 승인 없이 프론트/루트/백엔드의 미러 자산을 삭제·비우기·단순화하지 않습니다.
 
 ## 디자인 토큰 규칙 (⛔ HARD BLOCK)
@@ -67,7 +66,7 @@
 - `pnpm typecheck`
 - `pnpm test`
 - 필요 시 `pnpm build`
-- 교차 패키지 작업 시 루트 [INTEGRATION_GATE.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\.cursor\docs\core\INTEGRATION_GATE.md) 기준의 Port/CORS/Env 증빙
+- 교차 패키지 작업 시 루트 [INTEGRATION_GATE.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\.ai\gates\INTEGRATION_GATE.md) 기준의 Port/CORS/Env 증빙
 
 ## 빠른 판단
 
@@ -80,7 +79,7 @@
 
 ## 참조 경로
 
-- 프론트 정본 운영 가이드: [frontend/.cursor/AGENTS.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\frontend\.cursor\AGENTS.md)
-- 루트 handoff 스키마: [HANDOFF_SCHEMA_2026-04-v1.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\.cursor\docs\handoffs\HANDOFF_SCHEMA_2026-04-v1.md)
-- 통합 게이트: [INTEGRATION_GATE.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\.cursor\docs\core\INTEGRATION_GATE.md)
+- 디자인 토큰 규칙: [.codex/rules/frontend-design-system.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\.codex\rules\frontend-design-system.md)
+- 핸드오프 산출물: `.ai/handoffs/` (`schema_version: 2026-04-v1`)
+- 통합 게이트: [INTEGRATION_GATE.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\.ai\gates\INTEGRATION_GATE.md)
 - 저장소별 협업 기준: [REPOSITORY_WORKFLOW.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\docs\REPOSITORY_WORKFLOW.md)
