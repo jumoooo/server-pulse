@@ -29,6 +29,21 @@
 - `.cursor` 자산은 기존 SoT로 유지하고, `.codex`/`.agents`는 Codex 병행 레이어로만 추가합니다.
 - 사용자 승인 없이 프론트/루트/백엔드의 미러 자산을 삭제·비우기·단순화하지 않습니다.
 
+## 디자인 토큰 규칙 (⛔ HARD BLOCK)
+
+직접 색상 사용 금지 — 반드시 시맨틱 토큰만 사용:
+
+| 금지 | 허용 |
+|------|------|
+| `bg-gray-*`, `bg-white`, `bg-black` | `bg-bg-base`, `bg-bg-surface`, `bg-bg-elevated` |
+| `text-gray-*`, `text-white`, `text-black` | `text-fg-base`, `text-fg-muted`, `text-fg-subtle` |
+| `border-gray-*` | `border-border-default`, `border-border-subtle` |
+| 모든 raw Tailwind 팔레트 (`bg-indigo-*`, `bg-red-*` 등) | `bg-interactive-*`, `bg-status-*`, `bg-severity-*` |
+| hex 색상 (`#1f2937`, `#6b7280` 등) | CSS var (`--color-fg-muted`)를 `useCssVar` 훅으로 읽기 |
+
+- Recharts/SVG DOM 속성: `useCssVar` 훅으로 CSS 변수 동적 읽기
+- 상세 매핑 및 Before/After 예시: `.codex/rules/frontend-design-system.md`
+
 ## 이 저장소에서 처리하는 작업
 
 - UI / 화면 / 레이아웃
