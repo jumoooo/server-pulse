@@ -19,7 +19,7 @@ function renderLine(line: string, index: number) {
   }
   if (line === "") return <div key={index} className="h-1" />;
   return (
-    <p key={index} className="text-sm text-gray-300 leading-relaxed">
+    <p key={index} className="text-sm leading-relaxed text-fg-base">
       {line}
     </p>
   );
@@ -64,7 +64,7 @@ export function AnalysisPanel({ serverId, onClose }: AnalysisPanelProps) {
   const isRunning = state === "loading" || state === "streaming";
 
   return (
-    <div className="rounded-xl border border-indigo-500/30 bg-gray-900 p-5">
+    <div className="rounded-xl border border-indigo-500/30 bg-bg-surface p-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <svg
@@ -80,7 +80,7 @@ export function AnalysisPanel({ serverId, onClose }: AnalysisPanelProps) {
               d="M13 10V3L4 14h7v7l9-11h-7z"
             />
           </svg>
-          <span className="text-sm font-semibold text-white">AI 서버 분석</span>
+          <span className="text-sm font-semibold text-fg-base">AI 서버 분석</span>
         </div>
         <div className="flex items-center gap-2">
           {state === "idle" || state === "done" || state === "error" ? (
@@ -97,7 +97,7 @@ export function AnalysisPanel({ serverId, onClose }: AnalysisPanelProps) {
             type="button"
             onClick={onClose}
             disabled={isRunning}
-            className="rounded-lg border border-gray-700 px-3 py-1.5 text-xs text-gray-400 transition-colors hover:border-gray-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg border border-border-default px-3 py-1.5 text-xs text-fg-muted transition-colors hover:text-fg-base disabled:cursor-not-allowed disabled:opacity-50"
           >
             닫기
           </button>
@@ -105,13 +105,13 @@ export function AnalysisPanel({ serverId, onClose }: AnalysisPanelProps) {
       </div>
 
       {state === "idle" && (
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-4 text-sm text-fg-muted">
           현재 서버 지표와 활성 알림을 바탕으로 AI가 원인을 분석하고 권장 조치를 제안합니다.
         </p>
       )}
 
       {state === "loading" && (
-        <div className="mt-4 flex items-center gap-2 text-sm text-gray-400">
+        <div className="mt-4 flex items-center gap-2 text-sm text-fg-muted">
           <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
           분석 중...
         </div>

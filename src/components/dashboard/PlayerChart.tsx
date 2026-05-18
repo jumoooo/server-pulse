@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import type { MetricPoint } from "@/types/server";
 import { EmptyState } from "@/components/common/EmptyState";
+import { useChartColors } from "@/hooks/useChartColors";
 
 interface PlayerChartProps {
   data: MetricPoint[];
@@ -30,8 +31,8 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 shadow-lg">
-      <p className="text-xs text-gray-400">{label}</p>
+    <div className="rounded-lg border border-border-default bg-bg-surface px-3 py-2 shadow-lg">
+      <p className="text-xs text-fg-muted">{label}</p>
       <p className="mt-0.5 text-sm font-semibold text-indigo-400">
         {payload[0]?.value ?? 0}명
       </p>
@@ -45,6 +46,8 @@ function formatTime(iso: string) {
 }
 
 export function PlayerChart({ data }: PlayerChartProps) {
+  const chartColors = useChartColors();
+
   if (!data.length) {
     return <EmptyState message="플레이어 데이터가 없습니다." />;
   }
@@ -60,16 +63,16 @@ export function PlayerChart({ data }: PlayerChartProps) {
         data={chartData}
         margin={{ top: 4, right: 8, bottom: 0, left: -16 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+        <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
         <XAxis
           dataKey="time"
-          tick={{ fill: "#6b7280", fontSize: 11 }}
+          tick={{ fill: chartColors.tick, fontSize: 11 }}
           axisLine={false}
           tickLine={false}
           interval="preserveStartEnd"
         />
         <YAxis
-          tick={{ fill: "#6b7280", fontSize: 11 }}
+          tick={{ fill: chartColors.tick, fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
@@ -77,10 +80,10 @@ export function PlayerChart({ data }: PlayerChartProps) {
         <Line
           type="monotone"
           dataKey="players"
-          stroke="#6366f1"
+          stroke={chartColors.line}
           strokeWidth={2}
           dot={false}
-          activeDot={{ r: 4, fill: "#6366f1", stroke: "#1e1b4b" }}
+          activeDot={{ r: 4, fill: chartColors.line, stroke: chartColors.grid }}
         />
       </LineChart>
     </ResponsiveContainer>

@@ -22,11 +22,11 @@ export function Header() {
   const title = getPageTitle(pathname);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-gray-800 bg-gray-950/80 px-4 backdrop-blur-sm">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-border-default bg-bg-base/80 px-4 backdrop-blur-sm">
       <button
         type="button"
         onClick={toggleSidebar}
-        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-800 hover:text-gray-200"
+        className="rounded-lg p-2 text-fg-muted transition-colors hover:bg-bg-elevated hover:text-fg-base"
         aria-label="사이드바 열기/닫기"
       >
         <svg
@@ -44,11 +44,11 @@ export function Header() {
         </svg>
       </button>
 
-      <span className="text-sm font-semibold text-white">{title}</span>
+      <span className="text-sm font-semibold text-fg-base">{title}</span>
 
       <div className="flex-1" />
 
-      <div className="flex items-center gap-2 text-xs text-gray-600">
+      <div className="flex items-center gap-2 text-xs text-fg-subtle">
         <span className="hidden sm:inline">Game Server Observability</span>
       </div>
     </header>

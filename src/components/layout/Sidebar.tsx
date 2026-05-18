@@ -81,16 +81,16 @@ export function Sidebar() {
       )}
       <aside
         className={`
-          fixed left-0 top-0 z-40 h-screen bg-gray-950 border-r border-gray-800
+          fixed left-0 top-0 z-40 h-screen border-r border-border-default bg-bg-base
           transition-all duration-200 ease-out
           md:translate-x-0
           ${sidebarOpen ? "translate-x-0 w-56" : "-translate-x-full w-0 md:w-14"}
         `}
       >
         <div className="flex h-full flex-col">
-          <div className="flex h-14 items-center border-b border-gray-800 px-4">
+          <div className="flex h-14 items-center border-b border-border-default px-4">
             {sidebarOpen ? (
-              <span className="text-base font-bold text-white">
+              <span className="text-base font-bold text-fg-base">
                 Server<span className="text-indigo-400">Pulse</span>
               </span>
             ) : (
@@ -114,7 +114,7 @@ export function Sidebar() {
                     ${
                       isActive
                         ? "bg-indigo-600/20 text-indigo-400"
-                        : "text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+                        : "text-fg-muted hover:bg-bg-elevated hover:text-fg-base"
                     }
                     ${!sidebarOpen ? "justify-center px-2" : ""}
                   `}
@@ -128,7 +128,6 @@ export function Sidebar() {
               );
             })}
           </nav>
-
           {process.env.NEXT_PUBLIC_DEMO_MODE !== "true" && (
             <div className="border-t border-border-default p-2">
               <LogoutButton compact={!sidebarOpen} />

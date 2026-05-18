@@ -48,16 +48,16 @@ export function MetricsSummary({ servers }: MetricsSummaryProps) {
       {metrics.map((metric) => (
         <div
           key={metric.label}
-          className="bg-gray-900 border border-gray-800 rounded-xl p-5"
+          className="rounded-xl border border-border-default bg-bg-surface p-5"
         >
-          <p className="text-sm text-gray-400">{metric.label}</p>
+          <p className="text-sm text-fg-muted">{metric.label}</p>
           <div className="mt-2 flex items-baseline gap-1">
             <span className={`text-3xl font-bold ${metric.color}`}>
               {metric.value}
             </span>
-            <span className="text-sm text-gray-500">{metric.unit}</span>
+            <span className="text-sm text-fg-muted">{metric.unit}</span>
           </div>
-          <p className="mt-1 text-xs text-gray-600">{metric.sub}</p>
+          <p className="mt-1 text-xs text-fg-subtle">{metric.sub}</p>
         </div>
       ))}
     </div>

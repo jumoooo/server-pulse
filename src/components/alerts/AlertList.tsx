@@ -17,9 +17,9 @@ const SEVERITY_BADGE = {
 const SEVERITY_LABEL = { critical: "심각", warning: "경고", info: "정보" };
 
 const ALERT_STATUS_BADGE = {
-  open: "bg-gray-700 text-gray-200",
+  open: "bg-bg-elevated text-fg-base",
   acknowledged: "bg-indigo-400/10 text-indigo-400",
-  resolved: "bg-gray-800 text-gray-500",
+  resolved: "bg-bg-surface text-fg-muted",
 };
 const ALERT_STATUS_LABEL = {
   open: "열림",
@@ -45,7 +45,7 @@ export function AlertList({
       {alerts.map((alert) => (
         <li
           key={alert.id}
-          className={`rounded-xl border border-gray-800 bg-gray-900 p-4 transition-opacity ${
+          className={`rounded-xl border border-border-default bg-bg-surface p-4 transition-opacity ${
             alert.status === "resolved" ? "opacity-50" : ""
           }`}
         >
@@ -58,7 +58,7 @@ export function AlertList({
 
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                <p className="text-sm font-medium text-white">{alert.title}</p>
+                <p className="text-sm font-medium text-fg-base">{alert.title}</p>
                 <Link
                   href={`/servers/${alert.serverId}`}
                   className="text-xs text-indigo-400 hover:text-indigo-300 hover:underline"
@@ -66,8 +66,8 @@ export function AlertList({
                   {alert.serverName}
                 </Link>
               </div>
-              <p className="mt-1 text-xs text-gray-400">{alert.description}</p>
-              <p className="mt-1.5 text-xs text-gray-600">
+              <p className="mt-1 text-xs text-fg-muted">{alert.description}</p>
+              <p className="mt-1.5 text-xs text-fg-subtle">
                 {formatRelativeTime(alert.createdAt)}
               </p>
             </div>
@@ -84,7 +84,7 @@ export function AlertList({
                   type="button"
                   disabled={isPending}
                   onClick={() => onStatusChange(alert.id, "acknowledged")}
-                  className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1 text-xs font-medium text-gray-300 transition-colors hover:border-gray-600 hover:text-white disabled:opacity-50"
+                  className="rounded-lg border border-border-default bg-bg-elevated px-3 py-1 text-xs font-medium text-fg-muted transition-colors hover:text-fg-base disabled:opacity-50"
                 >
                   확인
                 </button>

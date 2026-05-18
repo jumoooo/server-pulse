@@ -20,7 +20,7 @@ export default function RootLayout({
      * suppressHydrationWarning: next-themes가 서버/클라이언트 간
      * class 속성 불일치를 발생시킬 수 있으므로 경고 억제
      */
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" className="dark" suppressHydrationWarning>
       <body className="antialiased min-h-screen bg-bg-base text-fg-base">
         <Providers>{children}</Providers>
       </body>

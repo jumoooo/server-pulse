@@ -26,6 +26,8 @@
 
 - 프론트 패키지 구현은 이 파일과 루트 [AGENTS.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\AGENTS.md)를 함께 따릅니다.
 - 운영 정본은 `.ai/` (handoff/gate/harness) + `.codex/` (Codex rules/agents)입니다. `.cursor`는 자료 참고만 허용, 직접 의존 금지.
+- 상세 라우팅·역할·Gemini 안전 실행 정본은 [frontend/.cursor/AGENTS.md](E:\MY_PROJECTS\NEXT_PROJECT\server-pulse\frontend\.cursor\AGENTS.md)에 있습니다.
+- `.cursor` 자산은 기존 SoT로 유지하고, `.codex`/`.agents`는 Codex 병행 레이어로만 추가합니다.
 - 사용자 승인 없이 프론트/루트/백엔드의 미러 자산을 삭제·비우기·단순화하지 않습니다.
 
 ## 디자인 토큰 규칙 (⛔ HARD BLOCK)

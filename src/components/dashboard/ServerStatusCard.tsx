@@ -98,7 +98,7 @@ export function ServerStatusCard({
 
   return (
     <div
-      className={`bg-gray-900 border ${config.border} rounded-xl p-5 flex items-center gap-4`}
+      className={`flex items-center gap-4 rounded-xl border border-border-default bg-bg-surface p-5 ${config.border}`}
     >
       <div
         className={`flex h-11 w-11 items-center justify-center rounded-lg ${config.bg} ${config.text} shrink-0`}
@@ -106,7 +106,7 @@ export function ServerStatusCard({
         {config.icon}
       </div>
       <div className="min-w-0">
-        <p className="text-sm text-gray-400">{label}</p>
+        <p className="text-sm text-fg-muted">{label}</p>
         <p className={`mt-0.5 text-3xl font-bold ${config.text}`}>{count}</p>
       </div>
     </div>
