@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LogoutButton } from "@/components/layout/LogoutButton";
 import { useAppStore } from "@/store/useAppStore";
 
 const navItems = [
@@ -127,6 +128,12 @@ export function Sidebar() {
               );
             })}
           </nav>
+
+          {process.env.NEXT_PUBLIC_DEMO_MODE !== "true" && (
+            <div className="border-t border-border-default p-2">
+              <LogoutButton compact={!sidebarOpen} />
+            </div>
+          )}
         </div>
       </aside>
     </>
