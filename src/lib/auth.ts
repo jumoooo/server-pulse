@@ -10,6 +10,8 @@ import { authConfig } from "@/lib/auth.config";
  * 비 Vercel 운영 서버는 `AUTH_STRICT=true` 로 강제할 수 있어요.
  */
 function resolveAuthSecret(): string {
+  if (process.env.DEMO_MODE === "true") return "demo-only-insecure-secret";
+
   const fromEnv =
     process.env.AUTH_SECRET?.trim() ||
     process.env.NEXTAUTH_SECRET?.trim() ||
